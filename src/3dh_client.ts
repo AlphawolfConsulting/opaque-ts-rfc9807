@@ -1,7 +1,12 @@
 // Copyright (c) 2021 Cloudflare, Inc. and contributors.
 // Copyright (c) 2021 Cloudflare, Inc.
+// Copyright (c) 2026 - Updated for RFC 9807 compliance
 // Licensed under the BSD-3-Clause license found in the LICENSE file or
 // at https://opensource.org/licenses/BSD-3-Clause
+
+// 3DH Client implementation (RFC 9807 Section 6.2)
+// Uses preamble construction with "RFC9807" version constant
+// Note: Functional layer available in 3dh-functional.ts
 
 import type { CredentialRequest, KE2 } from './messages.js'
 import { AuthFinish, AuthRequest, KE1 } from './messages.js'
