@@ -5,5 +5,8 @@
     "testEnvironment": "node",
     "transform": {},
     "collectCoverage": false,
-    "verbose": true
+    "verbose": true,
+    "moduleNameMapper": {
+        "^@cloudflare/voprf-ts/crypto-noble$": "<rootDir>/node_modules/@cloudflare/voprf-ts/lib/cjs/src/cryptoNoble.js"
+    }
 }
