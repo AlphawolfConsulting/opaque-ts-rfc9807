@@ -3,6 +3,7 @@
         "target": "ES2022",
         "module": "ES2022",
         "lib": [
+            "ES2022",
             "dom"
         ],
         "composite": true,
@@ -10,13 +11,20 @@
         "sourceMap": true,
         "isolatedModules": true,
         "strict": true,
+        "strictNullChecks": true,
+        "strictFunctionTypes": true,
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "alwaysStrict": true,
         "noEmitOnError": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
+        "skipLibCheck": true,
         "moduleResolution": "node",
         "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
         "verbatimModuleSyntax": true,
         "rootDir": ".",
         "outDir": "./lib"
