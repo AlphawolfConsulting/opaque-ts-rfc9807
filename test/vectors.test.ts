@@ -32,7 +32,6 @@ import { OPRFClient, Oprf } from '@cloudflare/voprf-ts'
 
 import { jest } from '@jest/globals'
 import { readFileSync } from 'node:fs'
-import { unzipSync } from 'node:zlib'
 
 interface Vector {
     config: Configuration
@@ -443,11 +442,10 @@ async function test_real_login(
 }
 
 function read_test_vectors(): Array<Vector> {
-    const filename = './test/testdata/vectors_v16.json.gz'
+    const filename = './test/testdata/vectors_v16.json'
     try {
-        const file = readFileSync(filename)
-        const json = unzipSync(file)
-        const vectors = JSON.parse(json.toString()) as Array<Vector>
+        const file = readFileSync(filename, 'utf-8')
+        const vectors = JSON.parse(file) as Array<Vector>
         return vectors
     } catch (error) {
         console.error(`Error reading ${filename}: ${error}`)

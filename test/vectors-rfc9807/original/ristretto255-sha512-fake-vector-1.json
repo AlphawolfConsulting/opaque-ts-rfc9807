@@ -1,0 +1,38 @@
+{
+  "config": {
+    "OPRF": "ristretto255-SHA512",
+    "Hash": "SHA512",
+    "KSF": "Identity",
+    "KDF": "HKDF-SHA512",
+    "MAC": "HMAC-SHA512",
+    "Group": "ristretto255",
+    "Context": "4f50415155452d504f43",
+    "Nh": 64,
+    "Npk": 32,
+    "Nsk": 32,
+    "Nm": 64,
+    "Nx": 64,
+    "Nok": 32
+  },
+  "inputs": {
+    "client_identity": "616c696365",
+    "server_identity": "626f62",
+    "oprf_seed": "743fc168d1f826ad43738933e5adb23da6fb95f95a1b069f0daa0522d0a78b617f701fc6aa46d3e7981e70de7765dfcd6b1e13e3369a582eb8dc456b10aa53b0",
+    "credential_identifier": "31323334",
+    "masking_nonce": "9c035896a043e70f897d87180c543e7a063b83c1bb728fbd189c619e27b6e5a6",
+    "client_private_key": "2b98980aa95ab53a0f39f0291903d2fdf04b00c167f0814169922df873002409",
+    "client_public_key": "84f43f9492e19c22d8bdaa4447cc3d4db1cdb5427a9f852c4707921212c36251",
+    "server_private_key": "c788585ae8b5ba2942b693b849be0c0426384e41977c18d2e81fbe30fd7c9f06",
+    "server_public_key": "825f832667480f08b0c9069da5083ac4d0e9ee31b49c4e0310031fea04d52966",
+    "server_nonce": "1e10f6eeab2a7a420bf09da9b27a4639645622c46358de9cf7ae813055ae2d12",
+    "client_keyshare_seed": "a270dc715dc2b4612bc7864312a05c3e9788ee1bad1f276d1e15bdeb4c355e94",
+    "server_keyshare_seed": "360b0937f47d45f6123a4d8f0d0c0814b6120d840ebb8bc5b4f6b62df07f78c2",
+    "masking_key": "39ebd51f0e39a07a1c2d2431995b0399bca9996c5d10014d6ebab4453dc10ce5cef38ed3df6e56bfff40c2d8dd4671c2b4cf63c3d54860f31fe40220d690bb71",
+    "KE1": "b0a26dcaca2230b8f5e4b1bcab9c84b586140221bb8b2848486874b0be44890542d4e61ed3f8d64cdd3b9d153343eca15b9b0d5e388232793c6376bd2d9cfd0ab641d7f20a245a09f1d4dbb6e301661af7f352beb0791d055e48d3645232f77f"
+  },
+  "intermediates": {},
+  "outputs": {
+    "KE2": "928f79ad8df21963e91411b9f55165ba833dea918f441db967cdc09521d229259c035896a043e70f897d87180c543e7a063b83c1bb728fbd189c619e27b6e5a632b5ab1bff96636144faa4f9f9afaac75dd88ea99cf5175902ae3f3b2195693f165f11929ba510a5978e64dcdabecbd7ee1e4380ce270e58fea58e6462d92964a1aaef72698bca1c673baeb04cc2bf7de5f3c2f5553464552d3a0f7698a9ca7f9c5e70c6cb1f706b2f175ab9d04bbd13926e816b6811a50b4aafa9799d5ed7971e10f6eeab2a7a420bf09da9b27a4639645622c46358de9cf7ae813055ae2d1298251c5ba55f6b0b2d58d9ff0c88fe4176484be62a96db6e2a8c4d431bd1bf27fe6c1d0537603835217d42ebf7b2581982732e74892fd28211b31ed33863f0beaf75ba6f59474c0aaf9d78a60a9b2f4cd24d7ab54131b3c8efa192df6b72db4c"
+  },
+  "comment": "RFC 9807 Appendix C.2.1 - OPAQUE-3DH Fake Test Vector 1"
+}
