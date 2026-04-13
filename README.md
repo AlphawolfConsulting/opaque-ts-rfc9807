@@ -1,20 +1,26 @@
-# opaque-ts
+# opaque-ts-rfc9807
 
-This is a Typescript library for the Asymmetric Password-Authenticated Key Exchange (OPAQUE) protocol.
+An enhanced Typescript implementation of the OPAQUE (Asymmetric Password-Authenticated Key Exchange) protocol with full compliance to [RFC 9807](https://datatracker.ietf.org/doc/html/rfc9807).
 
-[![NPM](https://nodei.co/npm/@cloudflare/opaque-ts.png)](https://www.npmjs.com/package/@cloudflare/opaque-ts)
+## Features
 
-## Use
+This implementation provides:
 
-Available at: [@cloudflare/opaque-ts](https://www.npmjs.com/package/@cloudflare/opaque-ts)
-
-```sh
-npm install @cloudflare/opaque-ts
-```
+- **RFC 9807 Compliance** — Complete implementation aligned with the final RFC 9807 specification
+- Functional implementations of cryptographic primitives with detailed documentation
+- Comprehensive test vectors and compliance validation
+- RFC 9497 (OPRF) compliance verification
+- Detailed protocol documentation for all components:
+  - 3DH (Three-Diffie-Hellman handshake)
+  - OPRF (Oblivious Pseudorandom Function)
+  - Envelope operations
+  - Authentication flows
+  - Registration flows
 
 ## Specification
 
-IETF Draft: [OPAQUE v07](https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-opaque-07)
+- [RFC 9807 — OPAQUE](https://datatracker.ietf.org/doc/html/rfc9807)
+- [RFC 9497 — Oblivious Pseudorandom Functions (OPRFs)](https://datatracker.ietf.org/doc/html/rfc9497)
 
 ## Test and Coverage
 
@@ -26,6 +32,10 @@ npm test
 ## Dependencies
 
 Uses `@cloudflare/voprf-ts` for the group and OPRF operations, WebCrypto API for hashing and key derivation functions, and `@noble/hashes` for scrypt memory-hard function.
+
+## Attribution
+
+This implementation is based on [Cloudflare's opaque-ts](https://github.com/cloudflare/opaque-ts), originally developed by Armando Faz and contributors at Cloudflare.
 
 ## License
 
