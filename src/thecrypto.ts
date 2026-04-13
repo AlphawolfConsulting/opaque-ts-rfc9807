@@ -3,9 +3,18 @@
 // Licensed under the BSD-3-Clause license found in the LICENSE file or
 // at https://opensource.org/licenses/BSD-3-Clause
 
-import { ctEqual, joinAll } from './util.js'
-
 import { scrypt } from '@noble/hashes/scrypt'
+
+import {
+    createHashOps,
+    createHMAC,
+    createKDFOps,
+    generateRandomBytes,
+    type HashAlgorithm,
+    type BoundHashOps,
+    type BoundHMACOps,
+    type BoundKDFOps
+} from './crypto/index.js'
 
 export interface PrngFn {
     random(numBytes: number): number[]
@@ -14,7 +23,12 @@ export interface PrngFn {
 export class Prng implements PrngFn {
     /* eslint-disable-next-line class-methods-use-this */
     random(numBytes: number): number[] {
-        return Array.from(crypto.getRandomValues(new Uint8Array(numBytes)))
+        // Use functional wrapper internally
+        const result = generateRandomBytes(numBytes)
+        if (result.isLeft()) {
+            throw result.unsafeCoerce()
+        }
+        return Array.from(result.unsafeCoerce())
     }
 }
 
@@ -26,28 +40,24 @@ export interface HashFn {
 
 export class Hash implements HashFn {
     readonly Nh: number
+    private readonly ops: BoundHashOps
 
     constructor(public readonly name: string) {
-        switch (name) {
-            case Hash.ID.SHA1:
-                this.Nh = 20
-                break
-            case Hash.ID.SHA256:
-                this.Nh = 32
-                break
-            case Hash.ID.SHA384:
-                this.Nh = 48
-                break
-            case Hash.ID.SHA512:
-                this.Nh = 64
-                break
-            default:
-                throw new Error(`invalid hash name: ${name}`)
+        // Use functional wrapper internally
+        const opsResult = createHashOps(name as HashAlgorithm)
+        if (opsResult.isLeft()) {
+            throw opsResult.unsafeCoerce()
         }
+        this.ops = opsResult.unsafeCoerce()
+        this.Nh = this.ops.config.Nh
     }
 
     async sum(msg: Uint8Array): Promise<Uint8Array> {
-        return new Uint8Array(await crypto.subtle.digest(this.name, msg))
+        const result = await this.ops.hash(msg)
+        if (result.isLeft()) {
+            throw result.unsafeCoerce()
+        }
+        return result.unsafeCoerce()
     }
 }
 
@@ -74,30 +84,36 @@ export interface MACFn {
 
 export class Hmac implements MACFn {
     readonly Nm: number
+    private readonly ops: BoundHMACOps
 
-    constructor(private readonly hash: string) {
-        this.Nm = new Hash(hash).Nh
+    constructor(readonly hash: string) {
+        // Use functional wrapper internally
+        const opsResult = createHMAC(hash as HashAlgorithm)
+        if (opsResult.isLeft()) {
+            throw opsResult.unsafeCoerce()
+        }
+        this.ops = opsResult.unsafeCoerce()
+        this.Nm = this.ops.config.Nm
     }
 
     async with_key(key: Uint8Array): Promise<MACOps> {
-        return new Hmac.Macops(
-            await crypto.subtle.importKey('raw', key, { name: 'HMAC', hash: this.hash }, false, [
-                'sign'
-            ])
-        )
-    }
-
-    private static Macops = class implements MACOps {
-        constructor(private readonly crypto_key: CryptoKey) {}
-
-        async sign(msg: Uint8Array): Promise<Uint8Array> {
-            return new Uint8Array(
-                await crypto.subtle.sign(this.crypto_key.algorithm.name, this.crypto_key, msg)
-            )
+        const opsResult = await this.ops.withKey(key)
+        if (opsResult.isLeft()) {
+            throw opsResult.unsafeCoerce()
         }
-
-        async verify(msg: Uint8Array, output: Uint8Array): Promise<boolean> {
-            return ctEqual(output, await this.sign(msg))
+        const hmacOps = opsResult.unsafeCoerce()
+        
+        return {
+            sign: async (msg: Uint8Array) => {
+                const result = await hmacOps.sign(msg)
+                if (result.isLeft()) throw result.unsafeCoerce()
+                return result.unsafeCoerce()
+            },
+            verify: async (msg: Uint8Array, output: Uint8Array) => {
+                const result = await hmacOps.verify(msg)(output)
+                if (result.isLeft()) throw result.unsafeCoerce()
+                return result.unsafeCoerce()
+            }
         }
     }
 }
@@ -110,31 +126,35 @@ export interface KDFFn {
 
 export class Hkdf implements KDFFn {
     readonly Nx: number
+    private readonly ops: BoundKDFOps
 
     constructor(public hash: string) {
-        this.Nx = new Hmac(hash).Nm
+        // Use functional wrapper internally
+        const opsResult = createKDFOps(hash as HashAlgorithm)
+        if (opsResult.isLeft()) {
+            throw opsResult.unsafeCoerce()
+        }
+        this.ops = opsResult.unsafeCoerce()
+        this.Nx = this.ops.config.hashLen
     }
 
     async extract(salt: Uint8Array, ikm: Uint8Array): Promise<Uint8Array> {
         if (salt.length === 0) {
             salt = new Uint8Array(this.Nx)
         }
-        return (await new Hmac(this.hash).with_key(salt)).sign(ikm)
+        const result = await this.ops.extract(salt)(ikm)
+        if (result.isLeft()) {
+            throw result.unsafeCoerce()
+        }
+        return result.unsafeCoerce()
     }
 
     async expand(prk: Uint8Array, info: Uint8Array, lenBytes: number): Promise<Uint8Array> {
-        const hashLen = new Hash(this.hash).Nh
-        const N = Math.ceil(lenBytes / hashLen)
-        const T = new Uint8Array(N * hashLen)
-        const hm = await new Hmac(this.hash).with_key(prk)
-        let Ti = new Uint8Array()
-        let offset = 0
-        for (let i = 0; i < N; i++) {
-            Ti = await hm.sign(joinAll([Ti, info, Uint8Array.of(i + 1)])) // eslint-disable-line no-await-in-loop
-            T.set(Ti, offset)
-            offset += hashLen
+        const result = await this.ops.expand(prk)(info)(lenBytes)
+        if (result.isLeft()) {
+            throw result.unsafeCoerce()
         }
-        return T.slice(0, lenBytes)
+        return result.unsafeCoerce()
     }
 }
 

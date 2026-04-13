@@ -16,6 +16,10 @@ export enum OpaqueID {
     OPAQUE_P256 = 'P256-SHA256',
     OPAQUE_P384 = 'P384-SHA384',
     OPAQUE_P521 = 'P521-SHA512'
+    // TODO: Add ristretto255 support for full OPAQUE protocol
+    // OPAQUE_RISTRETTO255 = 'ristretto255-SHA512'
+    // Note: Requires Noble crypto backend configuration (see docs/RISTRETTO255_SETUP.md)
+    // Note: Will enable 18 currently-skipped RFC test vectors
 }
 
 export class OpaqueConfig implements Config {

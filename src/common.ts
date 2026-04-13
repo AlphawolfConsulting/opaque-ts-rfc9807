@@ -5,19 +5,10 @@
 
 import type { AKEFn, AKEKeyPair, OPRFFn } from './thecrypto.js'
 import type { SuiteID } from '@cloudflare/voprf-ts'
-import {
-    Evaluation,
-    EvaluationRequest,
-    FinalizeData,
-    OPRFClient,
-    OPRFServer,
-    Oprf,
-    deriveKeyPair,
-    generateKeyPair,
-    getKeySizes
-} from '@cloudflare/voprf-ts'
+import { Oprf, deriveKeyPair, generateKeyPair, getKeySizes } from '@cloudflare/voprf-ts'
 import type { CredentialResponse, KE1 } from './messages.js'
 import { encode_number, encode_vector_16, encode_vector_8, joinAll } from './util.js'
+import { createOPRFConfig, createBoundOPRFOps, type BoundOPRFOperations } from './oprf-functional.js'
 
 import type { Config } from './config.js'
 
@@ -55,7 +46,7 @@ export const LABELS = {
     PrivateKey: encStr('PrivateKey'),
     ServerMAC: encStr('ServerMAC'),
     SessionKey: encStr('SessionKey'),
-    Version: encStr('OPAQUEv1-')
+    Version: encStr('RFC9807')
 } as const
 
 export class OPRFBaseMode implements OPRFFn {
@@ -65,27 +56,36 @@ export class OPRFBaseMode implements OPRFFn {
 
     readonly name: string // name: Name of the OPRF function.
 
+    private readonly ops: BoundOPRFOperations
+
     constructor(public readonly id: SuiteID) {
-        const group = Oprf.getGroup(id)
-        this.Noe = group.eltSize(true)
-        this.hash = Oprf.getHash(id)
-        this.name = group.id
+        // Create OPRF config and operations using functional wrapper
+        const configResult = createOPRFConfig(id)
+        if (configResult.isLeft()) {
+            throw configResult.extract() // Throw during construction only
+        }
+
+        const config = configResult.unsafeCoerce() // Safe after isLeft check
+        this.Noe = config.Noe
+        this.hash = config.hash
+        this.name = config.groupName
+        this.ops = createBoundOPRFOps(config)
     }
 
     async blind(input: Uint8Array): Promise<{ blind: Uint8Array; blindedElement: Uint8Array }> {
-        const [finData, evalReq] = await new OPRFClient(this.id).blind([input])
-        return {
-            blind: finData.blinds[0].serialize(),
-            blindedElement: evalReq.blinded[0].serialize()
+        const result = await this.ops.blind(input)
+        if (result.isLeft()) {
+            throw result.extract()
         }
+        return result.unsafeCoerce()
     }
 
     async evaluate(key: Uint8Array, blinded: Uint8Array): Promise<Uint8Array> {
-        const server = new OPRFServer(this.id, key)
-        const deserBlinded = server.gg.desElt(blinded)
-        const evalReq = new EvaluationRequest([deserBlinded])
-        const evaluations = await server.blindEvaluate(evalReq)
-        return evaluations.evaluated[0].serialize()
+        const result = await this.ops.evaluate(key)(blinded)
+        if (result.isLeft()) {
+            throw result.extract()
+        }
+        return result.unsafeCoerce()
     }
 
     async finalize(
@@ -93,23 +93,19 @@ export class OPRFBaseMode implements OPRFFn {
         blind: Uint8Array,
         evaluationBytes: Uint8Array
     ): Promise<Uint8Array> {
-        const client = new OPRFClient(this.id)
-        const deserEval = client.gg.desElt(evaluationBytes)
-        const blindSc = client.gg.desScalar(blind)
-        const finData = new FinalizeData([input], [blindSc], new EvaluationRequest([]))
-        const evaluation = new Evaluation(client.mode, [deserEval])
-        const outputs = await client.finalize(finData, evaluation)
-        return outputs[0]
+        const result = await this.ops.finalize({ input, blind, evaluation: evaluationBytes })
+        if (result.isLeft()) {
+            throw result.extract()
+        }
+        return result.unsafeCoerce()
     }
 
     async deriveOPRFKey(seed: Uint8Array): Promise<Uint8Array> {
-        const { privateKey } = await deriveKeyPair(
-            Oprf.Mode.OPRF,
-            this.id,
-            seed,
-            Uint8Array.from(LABELS.OPAQUE_DeriveKeyPair)
-        )
-        return privateKey
+        const result = await this.ops.deriveKeyPair(seed)
+        if (result.isLeft()) {
+            throw result.extract()
+        }
+        return result.unsafeCoerce()
     }
 }
 
