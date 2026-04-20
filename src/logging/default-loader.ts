@@ -5,7 +5,7 @@ export class DefaultEnvLoader implements OpaqueLoader {
 
     load(): Record<string, unknown> {
         try {
-            const raw = (typeof process !== 'undefined' && process?.env?.[this.envKey]) || '{}'
+            const raw = (typeof process !== 'undefined' && process.env[this.envKey]) || '{}'
             return JSON.parse(raw) as Record<string, unknown>
         } catch {
             return {}

@@ -46,8 +46,8 @@ export class AKE3DHClient {
         context: Uint8Array
     ): Promise<
         | {
-              auth_finish: AuthFinish
-              session_key: Uint8Array
+              readonly auth_finish: AuthFinish
+              readonly session_key: Uint8Array
           }
         | Error
     > {

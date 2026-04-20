@@ -8,12 +8,16 @@ import type { SuiteID } from '@cloudflare/voprf-ts'
 import { Oprf, deriveKeyPair, generateKeyPair, getKeySizes } from '@cloudflare/voprf-ts'
 import type { CredentialResponse, KE1 } from './messages.js'
 import { encode_number, encode_vector_16, encode_vector_8, joinAll } from './util.js'
-import { createOPRFConfig, createBoundOPRFOps, type BoundOPRFOperations } from './oprf-functional.js'
+import {
+    createOPRFConfig,
+    createBoundOPRFOps,
+    type BoundOPRFOperations
+} from './oprf-functional.js'
 
 import type { Config } from './config.js'
 
-export type Ok<T> = { ok: true; value: T }
-export type Err<E> = { ok: false; error: E }
+export type Ok<T> = { readonly ok: true; readonly value: T }
+export type Err<E> = { readonly ok: false; readonly error: E }
 export function Ok<T>(v: T): Ok<T> {
     return { ok: true, value: v }
 }
@@ -72,7 +76,9 @@ export class OPRFBaseMode implements OPRFFn {
         this.ops = createBoundOPRFOps(config)
     }
 
-    async blind(input: Uint8Array): Promise<{ blind: Uint8Array; blindedElement: Uint8Array }> {
+    async blind(
+        input: Uint8Array
+    ): Promise<{ readonly blind: Uint8Array; readonly blindedElement: Uint8Array }> {
         const result = await this.ops.blind(input)
         if (result.isLeft()) {
             throw result.extract()
@@ -155,8 +161,8 @@ export function preambleBuild(
     ])
 }
 
-type scalarElt = { sk: Uint8Array; pk: Uint8Array }
-type scalarElt3 = [scalarElt, scalarElt, scalarElt]
+type scalarElt = { readonly sk: Uint8Array; readonly pk: Uint8Array }
+type scalarElt3 = readonly [scalarElt, scalarElt, scalarElt]
 
 export function tripleDH_IKM(cfg: Config, keys: scalarElt3): Uint8Array {
     const gg = Oprf.getGroup(cfg.oprf.id as SuiteID)
@@ -177,9 +183,9 @@ export async function deriveKeys(
     ikm: Uint8Array,
     preamble: Uint8Array
 ): Promise<{
-    Km2: Uint8Array
-    Km3: Uint8Array
-    session_key: Uint8Array
+    readonly Km2: Uint8Array
+    readonly Km3: Uint8Array
+    readonly session_key: Uint8Array
 }> {
     const nosalt = new Uint8Array(cfg.hash.Nh)
     const prk = await cfg.kdf.extract(nosalt, ikm)

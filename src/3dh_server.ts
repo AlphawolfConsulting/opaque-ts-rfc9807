@@ -66,7 +66,7 @@ export class AKE3DHServer {
         return auth_response
     }
 
-    finish(auth_finish: AuthFinish): { session_key: number[] } | Error {
+    finish(auth_finish: AuthFinish): { readonly session_key: readonly number[] } | Error {
         if (!this.expected) {
             return new Error('handshake error')
         }

@@ -26,8 +26,8 @@ export interface RegistrationClient {
         client_identity?: string
     ): Promise<
         | {
-              record: RegistrationRecord
-              export_key: number[]
+              readonly record: RegistrationRecord
+              readonly export_key: readonly number[]
           }
         | Error
     >
@@ -42,16 +42,16 @@ export interface AuthClient {
         context?: string
     ): Promise<
         | {
-              ke3: KE3
-              session_key: number[]
-              export_key: number[]
+              readonly ke3: KE3
+              readonly session_key: readonly number[]
+              readonly export_key: readonly number[]
           }
         | Error
     >
 }
 
 export class OpaqueClient implements RegistrationClient, AuthClient {
-    private static States = {
+    private static readonly States = {
         NEW: 0,
         REG_STARTED: 1,
         LOG_STARTED: 2
@@ -95,8 +95,8 @@ export class OpaqueClient implements RegistrationClient, AuthClient {
         client_identity?: string
     ): Promise<
         | {
-              record: RegistrationRecord
-              export_key: number[]
+              readonly record: RegistrationRecord
+              readonly export_key: readonly number[]
           }
         | Error
     > {
@@ -139,9 +139,9 @@ export class OpaqueClient implements RegistrationClient, AuthClient {
         context?: string
     ): Promise<
         | {
-              ke3: KE3
-              session_key: number[]
-              export_key: number[]
+              readonly ke3: KE3
+              readonly session_key: readonly number[]
+              readonly export_key: readonly number[]
           }
         | Error
     > {

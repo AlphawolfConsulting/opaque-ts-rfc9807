@@ -33,7 +33,7 @@ export interface AuthServer {
         context?: string
     ): Promise<KE2 | Error>
 
-    authFinish(ke3: KE3): { session_key: number[] } | Error
+    authFinish(ke3: KE3): { readonly session_key: readonly number[] } | Error
 }
 
 export class OpaqueServer implements RegistrationServer, AuthServer {
@@ -47,7 +47,7 @@ export class OpaqueServer implements RegistrationServer, AuthServer {
 
     constructor(
         public readonly config: Config,
-        oprf_seed: number[],
+        oprf_seed: readonly number[],
         ake_keypair_export: AKEExportKeyPair,
         server_identity?: string
     ) {
@@ -111,7 +111,7 @@ export class OpaqueServer implements RegistrationServer, AuthServer {
         return ke2
     }
 
-    authFinish(ke3: KE3): { session_key: number[] } | Error {
+    authFinish(ke3: KE3): { readonly session_key: readonly number[] } | Error {
         return this.ake.finish(ke3.auth_finish)
     }
 }

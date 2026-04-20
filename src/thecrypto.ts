@@ -17,12 +17,12 @@ import {
 } from './crypto/index.js'
 
 export interface PrngFn {
-    random(numBytes: number): number[]
+    random(numBytes: number): readonly number[]
 }
 
 export class Prng implements PrngFn {
     /* eslint-disable-next-line class-methods-use-this */
-    random(numBytes: number): number[] {
+    random(numBytes: number): readonly number[] {
         // Use functional wrapper internally
         const result = generateRandomBytes(numBytes)
         if (result.isLeft()) {
@@ -33,8 +33,8 @@ export class Prng implements PrngFn {
 }
 
 export interface HashFn {
-    name: string
-    Nh: number //  Nh: The output size of the Hash function in bytes.
+    readonly name: string
+    readonly Nh: number //  Nh: The output size of the Hash function in bytes.
     sum(msg: Uint8Array): Promise<Uint8Array>
 }
 
@@ -78,7 +78,7 @@ export interface MACOps {
 }
 
 export interface MACFn {
-    Nm: number // The output size of the MAC() function in bytes.
+    readonly Nm: number // The output size of the MAC() function in bytes.
     with_key(key: Uint8Array): Promise<MACOps>
 }
 
@@ -102,7 +102,7 @@ export class Hmac implements MACFn {
             throw opsResult.unsafeCoerce()
         }
         const hmacOps = opsResult.unsafeCoerce()
-        
+
         return {
             sign: async (msg: Uint8Array) => {
                 const result = await hmacOps.sign(msg)
@@ -119,7 +119,7 @@ export class Hmac implements MACFn {
 }
 
 export interface KDFFn {
-    Nx: number // The output size of the Extract() function in bytes.
+    readonly Nx: number // The output size of the Extract() function in bytes.
     extract(salt: Uint8Array, ikm: Uint8Array): Promise<Uint8Array>
     expand(prk: Uint8Array, info: Uint8Array, lenBytes: number): Promise<Uint8Array>
 }
@@ -128,7 +128,7 @@ export class Hkdf implements KDFFn {
     readonly Nx: number
     private readonly ops: BoundKDFOps
 
-    constructor(public hash: string) {
+    constructor(public readonly hash: string) {
         // Use functional wrapper internally
         const opsResult = createKDFOps(hash as HashAlgorithm)
         if (opsResult.isLeft()) {
@@ -171,13 +171,13 @@ export const ScryptKSFFn: KSFFn = {
 } as const
 
 export interface AKEKeyPair {
-    private_key: Uint8Array
-    public_key: Uint8Array
+    readonly private_key: Uint8Array
+    readonly public_key: Uint8Array
 }
 
 export interface AKEExportKeyPair {
-    private_key: number[]
-    public_key: number[]
+    readonly private_key: readonly number[]
+    readonly public_key: readonly number[]
 }
 
 export interface AKEFn {
@@ -192,7 +192,9 @@ export interface OPRFFn {
     readonly hash: string // hash: Name of the hash function used.
     readonly id: string // id: Identifier of the OPRF.
     readonly name: string // name: Name of the OPRF function.
-    blind(input: Uint8Array): Promise<{ blind: Uint8Array; blindedElement: Uint8Array }>
+    blind(
+        input: Uint8Array
+    ): Promise<{ readonly blind: Uint8Array; readonly blindedElement: Uint8Array }>
     evaluate(key: Uint8Array, blinded: Uint8Array): Promise<Uint8Array>
     finalize(input: Uint8Array, blind: Uint8Array, evaluation: Uint8Array): Promise<Uint8Array>
     deriveOPRFKey(seed: Uint8Array): Promise<Uint8Array>
