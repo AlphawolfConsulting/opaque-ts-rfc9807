@@ -13,11 +13,11 @@ import type { Config } from './config.js'
 import { LABELS } from './common.js'
 
 class CleartextCredentials {
-    server_public_key: Uint8Array
+    readonly server_public_key: Uint8Array
 
-    server_identity: Uint8Array
+    readonly server_identity: Uint8Array
 
-    client_identity: Uint8Array
+    readonly client_identity: Uint8Array
 
     constructor(
         cfg: Config,
@@ -31,7 +31,7 @@ class CleartextCredentials {
         this.client_identity = client_identity ? client_identity : client_public_key
     }
 
-    serialize(): number[] {
+    serialize(): readonly number[] {
         return Array.from(
             joinAll([
                 this.server_public_key,
@@ -47,9 +47,9 @@ async function expand_keys(
     randomized_pwd: Uint8Array,
     envelope_nonce: Uint8Array
 ): Promise<{
-    auth_key: Uint8Array
-    export_key: Uint8Array
-    client_ake_keypair: AKEKeyPair
+    readonly auth_key: Uint8Array
+    readonly export_key: Uint8Array
+    readonly client_ake_keypair: AKEKeyPair
 }> {
     const auth_key = await cfg.kdf.expand(
         randomized_pwd,
@@ -78,10 +78,10 @@ async function store(
     server_identity?: Uint8Array,
     client_identity?: Uint8Array
 ): Promise<{
-    envelope: Envelope
-    client_public_key: Uint8Array
-    masking_key: Uint8Array
-    export_key: Uint8Array
+    readonly envelope: Envelope
+    readonly client_public_key: Uint8Array
+    readonly masking_key: Uint8Array
+    readonly export_key: Uint8Array
 }> {
     const envelope_nonce = new Uint8Array(cfg.prng.random(cfg.constants.Nn))
     const { auth_key, export_key, client_ake_keypair } = await expand_keys(
@@ -118,8 +118,8 @@ async function recover(
     client_identity?: Uint8Array
 ): Promise<
     | {
-          client_ake_keypair: AKEKeyPair
-          export_key: Uint8Array
+          readonly client_ake_keypair: AKEKeyPair
+          readonly export_key: Uint8Array
       }
     | Error
 > {
@@ -148,12 +148,12 @@ async function recover(
 export class OpaqueCoreClient {
     constructor(
         public readonly config: Config,
-        private ksf: KSFFn = ScryptKSFFn
+        private readonly ksf: KSFFn = ScryptKSFFn
     ) {}
 
     async createRegistrationRequest(
         password: Uint8Array
-    ): Promise<{ request: RegistrationRequest; blind: Uint8Array }> {
+    ): Promise<{ readonly request: RegistrationRequest; readonly blind: Uint8Array }> {
         const { blindedElement: M, blind } = await this.config.oprf.blind(password)
         const request = new RegistrationRequest(this.config, M)
         return { request, blind }
@@ -166,8 +166,8 @@ export class OpaqueCoreClient {
         server_identity?: Uint8Array,
         client_identity?: Uint8Array
     ): Promise<{
-        record: RegistrationRecord
-        export_key: number[]
+        readonly record: RegistrationRecord
+        readonly export_key: readonly number[]
     }> {
         const oprf_output = await this.config.oprf.finalize(password, blind, response.evaluation)
         const nosalt = new Uint8Array(this.config.hash.Nh)
@@ -190,7 +190,7 @@ export class OpaqueCoreClient {
 
     async createCredentialRequest(
         password: Uint8Array
-    ): Promise<{ request: CredentialRequest; blind: Uint8Array }> {
+    ): Promise<{ readonly request: CredentialRequest; readonly blind: Uint8Array }> {
         const { blindedElement: M, blind } = await this.config.oprf.blind(password)
         const request = new CredentialRequest(this.config, M)
         return { request, blind }
@@ -204,9 +204,9 @@ export class OpaqueCoreClient {
         client_identity?: Uint8Array
     ): Promise<
         | {
-              client_ake_keypair: AKEKeyPair
-              server_public_key: Uint8Array
-              export_key: Uint8Array
+              readonly client_ake_keypair: AKEKeyPair
+              readonly server_public_key: Uint8Array
+              readonly export_key: Uint8Array
           }
         | Error
     > {

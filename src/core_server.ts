@@ -11,7 +11,7 @@ import type { Config } from './config.js'
 import { LABELS } from './common.js'
 
 export class OpaqueCoreServer {
-    oprf_seed: Uint8Array
+    readonly oprf_seed: Uint8Array
 
     constructor(
         public readonly config: Config,

@@ -8,7 +8,7 @@ import { checked_vector, decode_vector_16, encode_vector_16, joinAll } from './u
 import type { Config } from './config.js'
 
 export abstract class Serializable {
-    abstract serialize(): number[]
+    abstract serialize(): readonly number[]
 
     static check_string(a: unknown): boolean {
         if (typeof a === 'string') {
@@ -24,7 +24,7 @@ export abstract class Serializable {
         throw new Error('Uint8Array expected')
     }
 
-    static check_uint8arrays(as: Uint8Array[]): boolean {
+    static check_uint8arrays(as: readonly Uint8Array[]): boolean {
         return as.every((v) => Serializable.check_uint8array(v))
     }
 
@@ -38,7 +38,7 @@ export abstract class Serializable {
         return true
     }
 
-    static check_bytes_arrays(as: Array<unknown>): boolean {
+    static check_bytes_arrays(as: ReadonlyArray<unknown>): boolean {
         return as.every((v) => Serializable.check_bytes_array(v))
     }
 
@@ -46,7 +46,7 @@ export abstract class Serializable {
         throw new Error('child class must implement')
     }
 
-    static checked_bytes_to_uint8array(cfg: Config, bytes: number[]): Uint8Array {
+    static checked_bytes_to_uint8array(cfg: Config, bytes: readonly number[]): Uint8Array {
         this.check_bytes_array(bytes)
         const u8array = Uint8Array.from(bytes)
         this.checked_object(cfg, u8array)
@@ -59,9 +59,9 @@ export abstract class Serializable {
 }
 
 export class Envelope extends Serializable {
-    nonce: Uint8Array
+    readonly nonce: Uint8Array
 
-    auth_tag: Uint8Array
+    readonly auth_tag: Uint8Array
 
     constructor(cfg: Config, nonce: Uint8Array, auth_tag: Uint8Array) {
         super()
@@ -69,7 +69,7 @@ export class Envelope extends Serializable {
         this.auth_tag = checked_vector(auth_tag, cfg.mac.Nm)
     }
 
-    serialize(): number[] {
+    serialize(): readonly number[] {
         return Array.from(joinAll([this.nonce, this.auth_tag]))
     }
 
@@ -77,7 +77,7 @@ export class Envelope extends Serializable {
         return cfg.constants.Nn + cfg.mac.Nm
     }
 
-    static deserialize(cfg: Config, bytes: number[]): Envelope {
+    static deserialize(cfg: Config, bytes: readonly number[]): Envelope {
         const u8array = this.checked_bytes_to_uint8array(cfg, bytes)
 
         let start = 0
@@ -92,7 +92,7 @@ export class Envelope extends Serializable {
 }
 
 export class RegistrationRequest extends Serializable {
-    data: Uint8Array
+    readonly data: Uint8Array
 
     constructor(cfg: Config, data: Uint8Array) {
         Serializable.check_uint8array(data)
@@ -100,7 +100,7 @@ export class RegistrationRequest extends Serializable {
         this.data = checked_vector(data, cfg.oprf.Noe)
     }
 
-    serialize(): number[] {
+    serialize(): readonly number[] {
         return Array.from(this.data)
     }
 
@@ -108,7 +108,7 @@ export class RegistrationRequest extends Serializable {
         return cfg.oprf.Noe
     }
 
-    static deserialize(cfg: Config, bytes: number[]): RegistrationRequest {
+    static deserialize(cfg: Config, bytes: readonly number[]): RegistrationRequest {
         const u8array = this.checked_bytes_to_uint8array(cfg, bytes)
         const start = 0
         const end = cfg.oprf.Noe
@@ -119,9 +119,9 @@ export class RegistrationRequest extends Serializable {
 }
 
 export class RegistrationResponse extends Serializable {
-    evaluation: Uint8Array
+    readonly evaluation: Uint8Array
 
-    server_public_key: Uint8Array
+    readonly server_public_key: Uint8Array
 
     constructor(cfg: Config, data: Uint8Array, server_public_key: Uint8Array) {
         Serializable.check_uint8arrays([data, server_public_key])
@@ -130,7 +130,7 @@ export class RegistrationResponse extends Serializable {
         this.server_public_key = checked_vector(server_public_key, cfg.ake.Npk)
     }
 
-    serialize(): number[] {
+    serialize(): readonly number[] {
         return Array.from(joinAll([this.evaluation, this.server_public_key]))
     }
 
@@ -138,7 +138,7 @@ export class RegistrationResponse extends Serializable {
         return cfg.oprf.Noe + cfg.ake.Npk
     }
 
-    static deserialize(cfg: Config, bytes: number[]): RegistrationResponse {
+    static deserialize(cfg: Config, bytes: readonly number[]): RegistrationResponse {
         const u8array = this.checked_bytes_to_uint8array(cfg, bytes)
 
         let start = 0
@@ -153,11 +153,11 @@ export class RegistrationResponse extends Serializable {
 }
 
 export class RegistrationRecord extends Serializable {
-    client_public_key: Uint8Array
+    readonly client_public_key: Uint8Array
 
-    masking_key: Uint8Array
+    readonly masking_key: Uint8Array
 
-    envelope: Envelope
+    readonly envelope: Envelope
 
     constructor(
         cfg: Config,
@@ -172,7 +172,7 @@ export class RegistrationRecord extends Serializable {
         this.envelope = envelope
     }
 
-    serialize(): number[] {
+    serialize(): readonly number[] {
         return Array.from(
             joinAll([
                 this.client_public_key,
@@ -186,7 +186,7 @@ export class RegistrationRecord extends Serializable {
         return cfg.ake.Npk + cfg.hash.Nh + Envelope.sizeSerialized(cfg)
     }
 
-    static deserialize(cfg: Config, bytes: number[]): RegistrationRecord {
+    static deserialize(cfg: Config, bytes: readonly number[]): RegistrationRecord {
         const u8array = this.checked_bytes_to_uint8array(cfg, bytes)
 
         let start = 0
@@ -215,7 +215,7 @@ export class RegistrationRecord extends Serializable {
 }
 
 export class CredentialRequest extends Serializable {
-    data: Uint8Array
+    readonly data: Uint8Array
 
     constructor(cfg: Config, data: Uint8Array) {
         Serializable.check_uint8array(data)
@@ -223,7 +223,7 @@ export class CredentialRequest extends Serializable {
         this.data = checked_vector(data, cfg.oprf.Noe)
     }
 
-    serialize(): number[] {
+    serialize(): readonly number[] {
         return Array.from(this.data)
     }
 
@@ -231,7 +231,7 @@ export class CredentialRequest extends Serializable {
         return cfg.oprf.Noe
     }
 
-    static deserialize(cfg: Config, bytes: number[]): CredentialRequest {
+    static deserialize(cfg: Config, bytes: readonly number[]): CredentialRequest {
         const u8array = this.checked_bytes_to_uint8array(cfg, bytes)
         const start = 0
         const end = cfg.oprf.Noe
@@ -242,11 +242,11 @@ export class CredentialRequest extends Serializable {
 }
 
 export class CredentialResponse extends Serializable {
-    evaluation: Uint8Array
+    readonly evaluation: Uint8Array
 
-    masking_nonce: Uint8Array
+    readonly masking_nonce: Uint8Array
 
-    masked_response: Uint8Array
+    readonly masked_response: Uint8Array
 
     constructor(
         cfg: Config,
@@ -264,7 +264,7 @@ export class CredentialResponse extends Serializable {
         )
     }
 
-    serialize(): number[] {
+    serialize(): readonly number[] {
         return Array.from(joinAll([this.evaluation, this.masking_nonce, this.masked_response]))
     }
 
@@ -272,7 +272,7 @@ export class CredentialResponse extends Serializable {
         return cfg.oprf.Noe + cfg.constants.Nn + cfg.ake.Npk + Envelope.sizeSerialized(cfg)
     }
 
-    static deserialize(cfg: Config, bytes: number[]): CredentialResponse {
+    static deserialize(cfg: Config, bytes: readonly number[]): CredentialResponse {
         const u8array = this.checked_bytes_to_uint8array(cfg, bytes)
 
         let start = 0
@@ -295,7 +295,7 @@ export class CredentialResponse extends Serializable {
 export class CredentialFile extends Serializable {
     credential_identifier: string
 
-    record: RegistrationRecord
+    readonly record: RegistrationRecord
 
     client_identity?: string
 
@@ -318,7 +318,7 @@ export class CredentialFile extends Serializable {
         this.client_identity = client_identity
     }
 
-    serialize(): number[] {
+    serialize(): readonly number[] {
         const te = new TextEncoder()
         return Array.from(
             joinAll([
@@ -338,7 +338,7 @@ export class CredentialFile extends Serializable {
         )
     }
 
-    static deserialize(cfg: Config, bytes: number[]): CredentialFile {
+    static deserialize(cfg: Config, bytes: readonly number[]): CredentialFile {
         const u8array = this.checked_bytes_to_uint8array(cfg, bytes)
         const td = new TextDecoder()
         const res = decode_vector_16(u8array)
@@ -359,9 +359,9 @@ export class CredentialFile extends Serializable {
 }
 
 export class AuthRequest extends Serializable {
-    client_nonce: Uint8Array
+    readonly client_nonce: Uint8Array
 
-    client_public_keyshare: Uint8Array
+    readonly client_public_keyshare: Uint8Array
 
     constructor(cfg: Config, client_nonce: Uint8Array, client_public_keyshare: Uint8Array) {
         Serializable.check_uint8arrays([client_nonce, client_public_keyshare])
@@ -370,7 +370,7 @@ export class AuthRequest extends Serializable {
         this.client_public_keyshare = checked_vector(client_public_keyshare, cfg.ake.Npk)
     }
 
-    serialize(): number[] {
+    serialize(): readonly number[] {
         return Array.from(joinAll([this.client_nonce, this.client_public_keyshare]))
     }
 
@@ -378,7 +378,7 @@ export class AuthRequest extends Serializable {
         return cfg.constants.Nn + cfg.ake.Npk
     }
 
-    static deserialize(cfg: Config, bytes: number[]): AuthRequest {
+    static deserialize(cfg: Config, bytes: readonly number[]): AuthRequest {
         const u8array = this.checked_bytes_to_uint8array(cfg, bytes)
 
         let start = 0
@@ -394,11 +394,11 @@ export class AuthRequest extends Serializable {
 }
 
 export class AuthResponse extends Serializable {
-    server_nonce: Uint8Array
+    readonly server_nonce: Uint8Array
 
-    server_public_keyshare: Uint8Array
+    readonly server_public_keyshare: Uint8Array
 
-    server_mac: Uint8Array
+    readonly server_mac: Uint8Array
 
     constructor(
         cfg: Config,
@@ -413,7 +413,7 @@ export class AuthResponse extends Serializable {
         this.server_mac = checked_vector(server_mac, cfg.mac.Nm)
     }
 
-    serialize(): number[] {
+    serialize(): readonly number[] {
         return Array.from(
             joinAll([this.server_nonce, this.server_public_keyshare, this.server_mac])
         )
@@ -423,7 +423,7 @@ export class AuthResponse extends Serializable {
         return cfg.constants.Nn + cfg.ake.Npk + cfg.mac.Nm
     }
 
-    static deserialize(cfg: Config, bytes: number[]): AuthResponse {
+    static deserialize(cfg: Config, bytes: readonly number[]): AuthResponse {
         const u8array = this.checked_bytes_to_uint8array(cfg, bytes)
 
         let start = 0
@@ -443,7 +443,7 @@ export class AuthResponse extends Serializable {
 }
 
 export class AuthFinish extends Serializable {
-    client_mac: Uint8Array
+    readonly client_mac: Uint8Array
 
     constructor(cfg: Config, client_mac: Uint8Array) {
         Serializable.check_uint8array(client_mac)
@@ -451,7 +451,7 @@ export class AuthFinish extends Serializable {
         this.client_mac = checked_vector(client_mac, cfg.mac.Nm)
     }
 
-    serialize(): number[] {
+    serialize(): readonly number[] {
         return Array.from(this.client_mac.slice())
     }
 
@@ -459,7 +459,7 @@ export class AuthFinish extends Serializable {
         return cfg.mac.Nm
     }
 
-    static deserialize(cfg: Config, bytes: number[]): AuthFinish {
+    static deserialize(cfg: Config, bytes: readonly number[]): AuthFinish {
         const u8array = this.checked_bytes_to_uint8array(cfg, bytes)
         const start = 0
         const end = cfg.mac.Nm
@@ -470,9 +470,9 @@ export class AuthFinish extends Serializable {
 }
 
 export class ExpectedAuthResult extends Serializable {
-    expected_client_mac: Uint8Array
+    readonly expected_client_mac: Uint8Array
 
-    session_key: Uint8Array
+    readonly session_key: Uint8Array
 
     constructor(cfg: Config, expected_client_mac: Uint8Array, session_key: Uint8Array) {
         Serializable.check_uint8arrays([expected_client_mac, session_key])
@@ -481,7 +481,7 @@ export class ExpectedAuthResult extends Serializable {
         this.session_key = checked_vector(session_key, cfg.kdf.Nx)
     }
 
-    serialize(): number[] {
+    serialize(): readonly number[] {
         return Array.from(joinAll([this.expected_client_mac, this.session_key]))
     }
 
@@ -489,7 +489,7 @@ export class ExpectedAuthResult extends Serializable {
         return cfg.mac.Nm + cfg.kdf.Nx
     }
 
-    static deserialize(cfg: Config, bytes: number[]): ExpectedAuthResult {
+    static deserialize(cfg: Config, bytes: readonly number[]): ExpectedAuthResult {
         const u8array = this.checked_bytes_to_uint8array(cfg, bytes)
 
         let start = 0
@@ -506,13 +506,13 @@ export class ExpectedAuthResult extends Serializable {
 
 export class KE1 extends Serializable {
     constructor(
-        public credential_request: CredentialRequest,
-        public auth_request: AuthRequest
+        public readonly credential_request: CredentialRequest,
+        public readonly auth_request: AuthRequest
     ) {
         super()
     }
 
-    serialize(): number[] {
+    serialize(): readonly number[] {
         return [...this.credential_request.serialize(), ...this.auth_request.serialize()]
     }
 
@@ -520,7 +520,7 @@ export class KE1 extends Serializable {
         return CredentialRequest.sizeSerialized(cfg) + AuthRequest.sizeSerialized(cfg)
     }
 
-    static deserialize(cfg: Config, bytes: number[]): KE1 {
+    static deserialize(cfg: Config, bytes: readonly number[]): KE1 {
         this.checked_bytes_to_uint8array(cfg, bytes)
         let start = 0
         let end = CredentialRequest.sizeSerialized(cfg)
@@ -536,13 +536,13 @@ export class KE1 extends Serializable {
 
 export class KE2 extends Serializable {
     constructor(
-        public credential_response: CredentialResponse,
-        public auth_response: AuthResponse
+        public readonly credential_response: CredentialResponse,
+        public readonly auth_response: AuthResponse
     ) {
         super()
     }
 
-    serialize(): number[] {
+    serialize(): readonly number[] {
         return [...this.credential_response.serialize(), ...this.auth_response.serialize()]
     }
 
@@ -550,7 +550,7 @@ export class KE2 extends Serializable {
         return CredentialResponse.sizeSerialized(cfg) + AuthResponse.sizeSerialized(cfg)
     }
 
-    static deserialize(cfg: Config, bytes: number[]): KE2 {
+    static deserialize(cfg: Config, bytes: readonly number[]): KE2 {
         this.checked_bytes_to_uint8array(cfg, bytes)
         let start = 0
         let end = CredentialResponse.sizeSerialized(cfg)
@@ -565,11 +565,11 @@ export class KE2 extends Serializable {
 }
 
 export class KE3 extends Serializable {
-    constructor(public auth_finish: AuthFinish) {
+    constructor(public readonly auth_finish: AuthFinish) {
         super()
     }
 
-    serialize(): number[] {
+    serialize(): readonly number[] {
         return this.auth_finish.serialize()
     }
 
@@ -577,7 +577,7 @@ export class KE3 extends Serializable {
         return AuthFinish.sizeSerialized(cfg)
     }
 
-    static deserialize(cfg: Config, bytes: number[]): KE3 {
+    static deserialize(cfg: Config, bytes: readonly number[]): KE3 {
         this.checked_bytes_to_uint8array(cfg, bytes)
 
         const start = 0

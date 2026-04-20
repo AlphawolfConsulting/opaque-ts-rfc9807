@@ -34,73 +34,73 @@ import { jest } from '@jest/globals'
 import { readFileSync } from 'node:fs'
 
 interface Vector {
-    config: Configuration
-    inputs: Inputs
-    intermediates: Intermediates
-    outputs: Outputs
+    readonly config: Configuration
+    readonly inputs: Inputs
+    readonly intermediates: Intermediates
+    readonly outputs: Outputs
 }
 
 interface Configuration {
-    Context: string
-    Fake: string
-    Group: string
-    Hash: string
-    KDF: string
-    KSF: string
-    MAC: string
-    Name: string
-    Nh: string
-    Nm: string
-    Nok: string
-    Npk: string
-    Nsk: string
-    Nx: string
-    OPRF: string
+    readonly Context: string
+    readonly Fake: string
+    readonly Group: string
+    readonly Hash: string
+    readonly KDF: string
+    readonly KSF: string
+    readonly MAC: string
+    readonly Name: string
+    readonly Nh: string
+    readonly Nm: string
+    readonly Nok: string
+    readonly Npk: string
+    readonly Nsk: string
+    readonly Nx: string
+    readonly OPRF: string
 }
 
 interface Inputs {
-    blind_login: string
-    blind_registration: string
-    client_identity?: string
-    client_keyshare_seed: string
-    client_nonce: string
-    client_private_key?: string
-    client_public_key?: string
-    credential_identifier: string
-    envelope_nonce: string
-    masking_nonce: string
-    masking_key?: string
-    oprf_seed: string
-    password: string
-    server_identity?: string
-    server_keyshare_seed: string
-    server_nonce: string
-    server_private_key: string
-    server_public_key: string
-    KE1?: string
+    readonly blind_login: string
+    readonly blind_registration: string
+    readonly client_identity?: string
+    readonly client_keyshare_seed: string
+    readonly client_nonce: string
+    readonly client_private_key?: string
+    readonly client_public_key?: string
+    readonly credential_identifier: string
+    readonly envelope_nonce: string
+    readonly masking_nonce: string
+    readonly masking_key?: string
+    readonly oprf_seed: string
+    readonly password: string
+    readonly server_identity?: string
+    readonly server_keyshare_seed: string
+    readonly server_nonce: string
+    readonly server_private_key: string
+    readonly server_public_key: string
+    readonly KE1?: string
 }
 
 interface Intermediates {
-    auth_key: string
-    client_mac_key: string
-    client_public_key: string
-    envelope: string
-    handshake_secret: string
-    masking_key: string
-    oprf_key: string
-    randomized_password: string
-    server_mac_key: string
+    readonly auth_key: string
+    readonly client_mac_key: string
+    readonly client_public_key: string
+    readonly envelope: string
+    readonly handshake_secret: string
+    readonly masking_key: string
+    readonly oprf_key: string
+    readonly randomized_password: string
+    readonly server_mac_key: string
 }
 
 interface Outputs {
-    KE1: string
-    KE2: string
-    KE3: string
-    export_key: string
-    registration_request: string
-    registration_response: string
-    registration_upload: string
-    session_key: string
+    readonly KE1: string
+    readonly KE2: string
+    readonly KE3: string
+    readonly export_key: string
+    readonly registration_request: string
+    readonly registration_response: string
+    readonly registration_upload: string
+    readonly session_key: string
 }
 
 function createMocks(vector: Vector, cfg: Config, isFake: boolean) {
@@ -158,16 +158,16 @@ function createMocks(vector: Vector, cfg: Config, isFake: boolean) {
 }
 
 interface inputsRaw {
-    password: string
-    credential_identifier: string
-    server_private_key: Uint8Array
-    server_public_key: Uint8Array
-    oprf_seed: Uint8Array
-    masking_key: Uint8Array
-    client_public_key: Uint8Array
-    client_private_key: Uint8Array
-    context: string
-    ksf: KSFFn
+    readonly password: string
+    readonly credential_identifier: string
+    readonly server_private_key: Uint8Array
+    readonly server_public_key: Uint8Array
+    readonly oprf_seed: Uint8Array
+    readonly masking_key: Uint8Array
+    readonly client_public_key: Uint8Array
+    readonly client_private_key: Uint8Array
+    readonly context: string
+    readonly ksf: KSFFn
 }
 
 interface inputsRawOpt {
@@ -204,16 +204,16 @@ function getTestInputs(vector: Vector): inputsRaw & inputsRawOpt {
 }
 
 interface inputTest extends inputsRaw, inputsRawOpt {
-    cfg: Config
-    database: KVStorage
+    readonly cfg: Config
+    readonly database: KVStorage
 }
 
 const FAKE_CREDENTIAL_IDENTIFIER = 'FAKE_CREDENTIAL_IDENTIFIER'
 const FAKE_CLIENT_IDENTITY = 'FAKE_CLIENT_IDENTITY'
 
 async function test_setup(input: inputTest): Promise<{
-    client: OpaqueClient
-    server: OpaqueServer
+    readonly client: OpaqueClient
+    readonly server: OpaqueServer
 }> {
     const {
         cfg,
@@ -441,11 +441,11 @@ async function test_real_login(
     return true
 }
 
-function read_test_vectors(): Array<Vector> {
+function read_test_vectors(): ReadonlyArray<Vector> {
     const filename = './test/testdata/vectors_v16.json'
     try {
         const file = readFileSync(filename, 'utf-8')
-        const vectors = JSON.parse(file) as Array<Vector>
+        const vectors = JSON.parse(file) as ReadonlyArray<Vector>
         return vectors
     } catch (error) {
         console.error(`Error reading ${filename}: ${error}`)

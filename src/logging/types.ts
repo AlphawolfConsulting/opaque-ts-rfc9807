@@ -1,8 +1,8 @@
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error'
 
 export interface LogEntry {
-    message: string
-    [key: string]: unknown
+    readonly message: string
+    readonly [key: string]: unknown
 }
 
 /** Implement this interface to provide a custom logger */
@@ -17,6 +17,6 @@ export interface OpaqueLoader {
 }
 
 export interface LogConfig {
-    minLevel?: LogLevel
-    prefix?: string
+    readonly minLevel?: LogLevel
+    readonly prefix?: string
 }

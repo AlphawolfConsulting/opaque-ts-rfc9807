@@ -3,7 +3,7 @@
 // Licensed under the BSD-3-Clause license found in the LICENSE file or
 // at https://opensource.org/licenses/BSD-3-Clause
 
-export function joinAll(a: Uint8Array[]): Uint8Array {
+export function joinAll(a: readonly Uint8Array[]): Uint8Array {
     let size = 0
     for (const ai of a) {
         size += ai.length
@@ -57,8 +57,8 @@ function decode_vector(
     a: Uint8Array,
     bits_header: number
 ): {
-    payload: Uint8Array
-    consumed: number
+    readonly payload: Uint8Array
+    readonly consumed: number
 } {
     if (a.length === 0) {
         throw new Error('empty vector not allowed')
@@ -80,8 +80,8 @@ export function encode_vector_16(a: Uint8Array): Uint8Array {
 }
 
 export function decode_vector_16(a: Uint8Array): {
-    payload: Uint8Array
-    consumed: number
+    readonly payload: Uint8Array
+    readonly consumed: number
 } {
     return decode_vector(a, 16)
 }
@@ -93,7 +93,7 @@ export function checked_vector(a: Uint8Array, n: number, str = 'array'): Uint8Ar
     return a.slice(0, n)
 }
 
-export function checked_vector_array(a: number[], n: number, str = 'array'): Uint8Array {
+export function checked_vector_array(a: readonly number[], n: number, str = 'array'): Uint8Array {
     return checked_vector(Uint8Array.from(a), n, str)
 }
 

@@ -5,14 +5,14 @@ import { Oprf } from '@cloudflare/voprf-ts'
 
 /**
  * Configure the Noble crypto provider for ristretto255 and decaf448 support
- * 
+ *
  * This enables the full suite of RFC 9497 cipher suites including:
  * - P-256-SHA256 (default sjcl backend)
  * - P-384-SHA384 (default sjcl backend)
  * - P-521-SHA512 (default sjcl backend)
  * - ristretto255-SHA512 (requires noble backend) ✅
  * - decaf448-SHAKE256 (requires noble backend) ✅
- * 
+ *
  * @see https://github.com/cloudflare/voprf-ts#readme
  */
 export async function configureNobleCrypto(): Promise<void> {
@@ -25,7 +25,7 @@ export async function configureNobleCrypto(): Promise<void> {
             // @ts-expect-error - TypeScript "node" moduleResolution doesn't support package.json exports
             '@cloudflare/voprf-ts/crypto-noble'
         )
-        const CryptoNoble = (cryptoNobleModule as any).CryptoNoble
+        const CryptoNoble = cryptoNobleModule.CryptoNoble
 
         // Set as the global crypto provider for voprf-ts
         Oprf.Crypto = CryptoNoble
@@ -71,7 +71,7 @@ export function isDecaf448Available(): boolean {
 /**
  * Get list of available cipher suites
  */
-export function getAvailableSuites(): string[] {
+export function getAvailableSuites(): readonly string[] {
     const suites: string[] = []
 
     // NIST curves always available with default backend

@@ -1,7 +1,11 @@
 import { DefaultConsoleLogger, DefaultEnvLoader } from './logging/index.js'
 import type { OpaqueLogger, OpaqueLoader } from './logging/index.js'
 
-const minLevel = ((typeof process !== 'undefined' && process?.env?.LOG_LEVEL) || 'info') as 'debug' | 'info' | 'warn' | 'error'
+const minLevel = ((typeof process !== 'undefined' && process.env.LOG_LEVEL) || 'info') as
+    | 'debug'
+    | 'info'
+    | 'warn'
+    | 'error'
 
 // Default instances — swap these out with any OpaqueLogger/OpaqueLoader compliant implementation
 export const opaqueLogger: OpaqueLogger = new DefaultConsoleLogger({

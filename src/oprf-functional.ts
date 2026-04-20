@@ -1,7 +1,8 @@
 // Copyright (c) 2026 - OPAQUE RFC 9807 Implementation
 // Functional OPRF wrapper with RFC 9497 compliance
 
-import { Either, Right, Left } from 'purify-ts'
+import type { Either } from 'purify-ts'
+import { Right, Left } from 'purify-ts'
 import { curry2, curry3, tryCatchAsync } from './functional-utils.js'
 import { opaqueLogger } from './opaque-config.js'
 import type { SuiteID } from '@cloudflare/voprf-ts'
@@ -84,7 +85,9 @@ export const blindPassword = curry2(
                 blindedElement: evalReq.blinded[0].serialize()
             }
 
-            opaqueLogger.debug({ message: `Password blinded successfully (${result.blindedElement.length} bytes)` })
+            opaqueLogger.debug({
+                message: `Password blinded successfully (${result.blindedElement.length} bytes)`
+            })
 
             return result
         })
@@ -107,7 +110,9 @@ export const evaluateBlinded = curry3(
         blindedElement: Uint8Array
     ): Promise<Either<Error, Uint8Array>> => {
         return tryCatchAsync(async () => {
-            opaqueLogger.debug({ message: `Evaluating blinded element for suite ${config.suiteId}` })
+            opaqueLogger.debug({
+                message: `Evaluating blinded element for suite ${config.suiteId}`
+            })
 
             const server = new OPRFServer(config.suiteId, oprfKey)
             const group = Oprf.getGroup(config.suiteId)
@@ -137,7 +142,11 @@ export const evaluateBlinded = curry3(
 export const finalizeOPRF = curry2(
     async (
         config: OPRFConfig,
-        params: { input: Uint8Array; blind: Uint8Array; evaluation: Uint8Array }
+        params: {
+            readonly input: Uint8Array
+            readonly blind: Uint8Array
+            readonly evaluation: Uint8Array
+        }
     ): Promise<Either<Error, Uint8Array>> => {
         const { input, blind, evaluation } = params
         return tryCatchAsync(async () => {
@@ -193,16 +202,16 @@ export const deriveOPRFKeyPair = curry2(
  * This allows partial application of config for cleaner code
  */
 export interface BoundOPRFOperations {
-    blind: (input: Uint8Array) => Promise<Either<Error, BlindResult>>
-    evaluate: (
+    readonly blind: (input: Uint8Array) => Promise<Either<Error, BlindResult>>
+    readonly evaluate: (
         oprfKey: Uint8Array
     ) => (blindedElement: Uint8Array) => Promise<Either<Error, Uint8Array>>
-    finalize: (params: {
-        input: Uint8Array
-        blind: Uint8Array
-        evaluation: Uint8Array
+    readonly finalize: (params: {
+        readonly input: Uint8Array
+        readonly blind: Uint8Array
+        readonly evaluation: Uint8Array
     }) => Promise<Either<Error, Uint8Array>>
-    deriveKeyPair: (seed: Uint8Array) => Promise<Either<Error, Uint8Array>>
+    readonly deriveKeyPair: (seed: Uint8Array) => Promise<Either<Error, Uint8Array>>
 }
 
 /**

@@ -87,13 +87,13 @@ export const curry8 =
 
 // Pipe function for composition
 export const pipe =
-    <T>(...fns: Array<(arg: T) => T>) =>
+    <T>(...fns: ReadonlyArray<(arg: T) => T>) =>
     (value: T): T =>
         fns.reduce((acc, fn) => fn(acc), value)
 
 // Async pipe for promises
 export const pipeAsync =
-    <T>(...fns: Array<(arg: T) => Promise<T>>) =>
+    <T>(...fns: ReadonlyArray<(arg: T) => Promise<T>>) =>
     async (value: T): Promise<T> => {
         let result = value
         for (const fn of fns) {
@@ -127,7 +127,9 @@ export const tryCatchAsync = async <T, E = Error>(
 }
 
 // Memoization helper (pure function caching)
-export const memoize = <A extends unknown[], R>(fn: (...args: A) => R): ((...args: A) => R) => {
+export const memoize = <A extends readonly unknown[], R>(
+    fn: (...args: A) => R
+): ((...args: A) => R) => {
     const cache = new Map<string, R>()
     return (...args: A): R => {
         const key = JSON.stringify(args)
@@ -141,7 +143,7 @@ export const memoize = <A extends unknown[], R>(fn: (...args: A) => R): ((...arg
 }
 
 // Async memoization
-export const memoizeAsync = <A extends unknown[], R>(
+export const memoizeAsync = <A extends readonly unknown[], R>(
     fn: (...args: A) => Promise<R>
 ): ((...args: A) => Promise<R>) => {
     const cache = new Map<string, Promise<R>>()
@@ -157,7 +159,7 @@ export const memoizeAsync = <A extends unknown[], R>(
 }
 
 // Safe array access returning Maybe
-export const safeArrayGet = <T>(arr: T[], index: number): Maybe<T> =>
+export const safeArrayGet = <T>(arr: readonly T[], index: number): Maybe<T> =>
     index >= 0 && index < arr.length ? Just(arr[index]) : Nothing
 
 // Safe object property access
