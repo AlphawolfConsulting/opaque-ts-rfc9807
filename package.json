@@ -62,6 +62,7 @@
         "test:vectors:authentication": "tsc -b test && node --experimental-vm-modules ./node_modules/jest/bin/jest.js --testPathPattern=rfc9807-authentication-vectors --ci --no-cache",
         "test:vectors:fake": "tsc -b test && node --experimental-vm-modules ./node_modules/jest/bin/jest.js --testPathPattern=rfc9807-fake-response-vectors --ci --no-cache",
         "lint": "eslint .",
+        "lint:publish": "eslint src/",
         "format": "prettier './(src|test)/*.ts' --write",
         "filesbundle": "rollup -c"
     },

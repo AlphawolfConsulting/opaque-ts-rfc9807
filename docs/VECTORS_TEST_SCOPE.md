@@ -12,7 +12,7 @@ The generic `test/vectors.test.ts` test suite contains **3 pre-existing failures
 ## Test Failures
 
 | Test | Vector | Type | Status |
-|------|--------|------|--------|
+| ------ | -------- | ------ | -------- |
 | test-vector-4 | P256-SHA256 | Opaque-login-real | ✗ KE2 mismatch |
 | test-vector-5 | P256-SHA256 | Opaque-login-real | ✗ KE2 mismatch |
 | test-vector-8 | P256-SHA256 | Opaque-login-fake | ✗ KE2 mismatch |
@@ -24,18 +24,23 @@ The generic `test/vectors.test.ts` test suite contains **3 pre-existing failures
 ## Why These Are Out of Scope
 
 ### 1. **Different Protocol Version**
+
 The `vectors.test.ts` suite validates **older OPAQUE protocol vectors** (not RFC 9807 specific):
+
 - Uses generic `test/testdata/vectors_v16.json` (pre-RFC 9807 test vectors)
 - Tests the base OPAQUE protocol without RFC 9807 extensions
 - Predates RFC 9807 specification
 
 The RFC 9807 work scope covers:
+
 - New RFC 9807 test vector files (`vectors-rfc9807/` directory)
 - RFC 9807 message structures (3DH, envelope operations, etc.)
 - RFC 9807 authentication flow with 3DH
 
 ### 2. **Separate Test Infrastructure**
+
 RFC 9807 validation uses dedicated test suites:
+
 - `rfc9807-authentication-vectors.test.ts` ✅ **PASSING**
 - `rfc9807-registration-vectors.test.ts` ✅ **PASSING**
 - `rfc9807-fake-response-vectors.test.ts` ✅ **PASSING**
@@ -44,6 +49,7 @@ RFC 9807 validation uses dedicated test suites:
 Generic `vectors.test.ts` is a separate, independent test infrastructure for the base protocol.
 
 ### 3. **Pre-Existing Issue**
+
 - Phase 1 completion report (February 6, 2026) records: `vectors.test.js (9 passed, 18 skipped)`
 - These P256-SHA256 failures were **not introduced** by RFC 9807 work
 - Code changes made during RFC 9807 implementation:
@@ -52,6 +58,7 @@ Generic `vectors.test.ts` is a separate, independent test infrastructure for the
   - ❌ Did NOT modify KE2 generation or P256-SHA256 logic
 
 ### 4. **Impact Assessment**
+
 - **RFC 9807 Compliance**: 100% ✅ (all RFC 9807 suites passing)
 - **Test Status**: 133/135 tests passing (98.5%), 19 skipped
 - **Regression Risk**: None (failures pre-existed)
@@ -73,4 +80,3 @@ If these failures need addressing, they are separate tasks:
 ## Conclusion
 
 The RFC 9807 implementation is **production-ready** with all RFC 9807 test vectors passing. The 3 `vectors.test.js` failures represent a separate, pre-existing issue in the legacy OPAQUE protocol test infrastructure and do not block the RFC 9807 release.
-
