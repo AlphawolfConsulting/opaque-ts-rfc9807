@@ -28,19 +28,19 @@ import {
 import { KVStorage, expectNotError } from './common.js'
 
 interface inputTest {
-    cfg: Config
-    database: KVStorage
-    password: string
-    credential_identifier: string
-    client_identity: string
-    server_identity: string
-    oprf_seed: number[]
-    server_ake_keypair: AKEExportKeyPair
+    readonly cfg: Config
+    readonly database: KVStorage
+    readonly password: string
+    readonly credential_identifier: string
+    readonly client_identity: string
+    readonly server_identity: string
+    readonly oprf_seed: readonly number[]
+    readonly server_ake_keypair: AKEExportKeyPair
 }
 
 interface outputTest {
     record?: RegistrationRecord
-    export_key?: number[]
+    export_key?: readonly number[]
 }
 
 async function test_full_registration(input: inputTest, output: outputTest): Promise<boolean> {

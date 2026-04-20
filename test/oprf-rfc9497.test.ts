@@ -244,7 +244,11 @@ describe('OPRF RFC 9497 Compliance', () => {
 
             // Invalid evaluation (wrong size)
             const invalidEval = new Uint8Array(10)
-            const result = await ops.finalize({ input: testPassword, blind, evaluation: invalidEval })
+            const result = await ops.finalize({
+                input: testPassword,
+                blind,
+                evaluation: invalidEval
+            })
 
             expect(result.isLeft()).toBe(true)
         })
@@ -342,7 +346,10 @@ describe('OPRF RFC 9497 Compliance', () => {
         })
 
         it('should have correct element sizes per RFC 9497', () => {
-            const configs: Array<{ suite: SuiteID; expectedNoe: number }> = [
+            const configs: Array<{
+                readonly suite: SuiteID
+                readonly expectedNoe: number
+            }> = [
                 { suite: Oprf.Suite.P256_SHA256, expectedNoe: 33 },
                 { suite: Oprf.Suite.P384_SHA384, expectedNoe: 49 },
                 { suite: Oprf.Suite.P521_SHA512, expectedNoe: 67 }
@@ -360,7 +367,10 @@ describe('OPRF RFC 9497 Compliance', () => {
         })
 
         it('should have correct hash functions per RFC 9497', () => {
-            const configs: Array<{ suite: SuiteID; expectedHash: string }> = [
+            const configs: Array<{
+                readonly suite: SuiteID
+                readonly expectedHash: string
+            }> = [
                 { suite: Oprf.Suite.P256_SHA256, expectedHash: 'SHA-256' },
                 { suite: Oprf.Suite.P384_SHA384, expectedHash: 'SHA-384' },
                 { suite: Oprf.Suite.P521_SHA512, expectedHash: 'SHA-512' }
@@ -368,7 +378,10 @@ describe('OPRF RFC 9497 Compliance', () => {
 
             // Add ristretto255 if available
             if (isRistretto255Available()) {
-                configs.push({ suite: Oprf.Suite.RISTRETTO255_SHA512 as SuiteID, expectedHash: 'SHA-512' })
+                configs.push({
+                    suite: Oprf.Suite.RISTRETTO255_SHA512 as SuiteID,
+                    expectedHash: 'SHA-512'
+                })
             }
 
             for (const { suite, expectedHash } of configs) {
