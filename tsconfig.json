@@ -34,9 +34,6 @@
     "references": [
         {
             "path": "./src"
-        },
-        {
-            "path": "./examples"
         }
     ]
 }
