@@ -26,7 +26,7 @@ export class Prng implements PrngFn {
         // Use functional wrapper internally
         const result = generateRandomBytes(numBytes)
         if (result.isLeft()) {
-            throw result.unsafeCoerce()
+            throw result.unsafeCoerce() as Error
         }
         return Array.from(result.unsafeCoerce())
     }
@@ -46,7 +46,7 @@ export class Hash implements HashFn {
         // Use functional wrapper internally
         const opsResult = createHashOps(name as HashAlgorithm)
         if (opsResult.isLeft()) {
-            throw opsResult.unsafeCoerce()
+            throw opsResult.unsafeCoerce() as Error
         }
         this.ops = opsResult.unsafeCoerce()
         this.Nh = this.ops.config.Nh
@@ -55,7 +55,7 @@ export class Hash implements HashFn {
     async sum(msg: Uint8Array): Promise<Uint8Array> {
         const result = await this.ops.hash(msg)
         if (result.isLeft()) {
-            throw result.unsafeCoerce()
+            throw result.unsafeCoerce() as Error
         }
         return result.unsafeCoerce()
     }
@@ -90,7 +90,7 @@ export class Hmac implements MACFn {
         // Use functional wrapper internally
         const opsResult = createHMAC(hash as HashAlgorithm)
         if (opsResult.isLeft()) {
-            throw opsResult.unsafeCoerce()
+            throw opsResult.unsafeCoerce() as Error
         }
         this.ops = opsResult.unsafeCoerce()
         this.Nm = this.ops.config.Nm
@@ -99,19 +99,19 @@ export class Hmac implements MACFn {
     async with_key(key: Uint8Array): Promise<MACOps> {
         const opsResult = await this.ops.withKey(key)
         if (opsResult.isLeft()) {
-            throw opsResult.unsafeCoerce()
+            throw opsResult.unsafeCoerce() as Error
         }
         const hmacOps = opsResult.unsafeCoerce()
 
         return {
             sign: async (msg: Uint8Array) => {
                 const result = await hmacOps.sign(msg)
-                if (result.isLeft()) throw result.unsafeCoerce()
+                if (result.isLeft()) throw result.unsafeCoerce() as Error
                 return result.unsafeCoerce()
             },
             verify: async (msg: Uint8Array, output: Uint8Array) => {
                 const result = await hmacOps.verify(msg)(output)
-                if (result.isLeft()) throw result.unsafeCoerce()
+                if (result.isLeft()) throw result.unsafeCoerce() as Error
                 return result.unsafeCoerce()
             }
         }
@@ -132,19 +132,17 @@ export class Hkdf implements KDFFn {
         // Use functional wrapper internally
         const opsResult = createKDFOps(hash as HashAlgorithm)
         if (opsResult.isLeft()) {
-            throw opsResult.unsafeCoerce()
+            throw opsResult.unsafeCoerce() as Error
         }
         this.ops = opsResult.unsafeCoerce()
         this.Nx = this.ops.config.hashLen
     }
 
     async extract(salt: Uint8Array, ikm: Uint8Array): Promise<Uint8Array> {
-        if (salt.length === 0) {
-            salt = new Uint8Array(this.Nx)
-        }
-        const result = await this.ops.extract(salt)(ikm)
+        const effectiveSalt = salt.length === 0 ? new Uint8Array(this.Nx) : salt
+        const result = await this.ops.extract(effectiveSalt)(ikm)
         if (result.isLeft()) {
-            throw result.unsafeCoerce()
+            throw result.unsafeCoerce() as Error
         }
         return result.unsafeCoerce()
     }
@@ -152,7 +150,7 @@ export class Hkdf implements KDFFn {
     async expand(prk: Uint8Array, info: Uint8Array, lenBytes: number): Promise<Uint8Array> {
         const result = await this.ops.expand(prk)(info)(lenBytes)
         if (result.isLeft()) {
-            throw result.unsafeCoerce()
+            throw result.unsafeCoerce() as Error
         }
         return result.unsafeCoerce()
     }

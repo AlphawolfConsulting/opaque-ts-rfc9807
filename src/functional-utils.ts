@@ -133,8 +133,9 @@ export const memoize = <A extends readonly unknown[], R>(
     const cache = new Map<string, R>()
     return (...args: A): R => {
         const key = JSON.stringify(args)
-        if (cache.has(key)) {
-            return cache.get(key)!
+        const cached = cache.get(key)
+        if (cached !== undefined) {
+            return cached
         }
         const result = fn(...args)
         cache.set(key, result)
@@ -149,8 +150,9 @@ export const memoizeAsync = <A extends readonly unknown[], R>(
     const cache = new Map<string, Promise<R>>()
     return async (...args: A): Promise<R> => {
         const key = JSON.stringify(args)
-        if (cache.has(key)) {
-            return cache.get(key)!
+        const cached = cache.get(key)
+        if (cached !== undefined) {
+            return cached
         }
         const promise = fn(...args)
         cache.set(key, promise)

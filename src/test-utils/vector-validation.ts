@@ -72,35 +72,35 @@ export const assertBytesEqual = (
 /**
  * Load test vector from JSON file
  */
-export const loadTestVector = async (filename: string): Promise<any> => {
+export const loadTestVector = async (filename: string): Promise<unknown> => {
     // When compiled, this file is in lib/src/test-utils/, need to go up to project root
     const vectorPath = join(__dirname, '../../../test/vectors-rfc9807', filename)
     const content = await readFile(vectorPath, 'utf-8')
-    return JSON.parse(content)
+    return JSON.parse(content) as unknown
 }
 
 /**
  * Parse test vector hex values to Uint8Arrays
  */
-export const parseVectorHex = <T extends Record<string, any>>(
+export const parseVectorHex = <T extends Record<string, unknown>>(
     obj: T
 ): { readonly [K in keyof T]: Uint8Array } => {
-    const parsed: any = {}
+    const parsed: Record<string, Uint8Array> = {}
     for (const [key, value] of Object.entries(obj)) {
         if (typeof value === 'string') {
             parsed[key] = hexToBytes(value)
         }
     }
-    return parsed
+    return parsed as { readonly [K in keyof T]: Uint8Array }
 }
 
 /**
  * Parse optional test vector hex values (handles nil/undefined)
  */
-export const parseOptionalVectorHex = <T extends Record<string, any>>(
+export const parseOptionalVectorHex = <T extends Record<string, unknown>>(
     obj: T
 ): { readonly [K in keyof T]: Uint8Array | undefined } => {
-    const parsed: any = {}
+    const parsed: Record<string, Uint8Array | undefined> = {}
     for (const [key, value] of Object.entries(obj)) {
         if (typeof value === 'string' && value.length > 0) {
             parsed[key] = hexToBytes(value)
@@ -108,15 +108,15 @@ export const parseOptionalVectorHex = <T extends Record<string, any>>(
             parsed[key] = undefined
         }
     }
-    return parsed
+    return parsed as { readonly [K in keyof T]: Uint8Array | undefined }
 }
 
 /**
  * Validate configuration parameters match expected values
  */
 export const validateConfig = (
-    actualConfig: Record<string, any>,
-    expectedConfig: Record<string, any>,
+    actualConfig: Record<string, unknown>,
+    expectedConfig: Record<string, unknown>,
     label: string
 ): Either<Error, void> => {
     const errors: string[] = []
@@ -138,6 +138,6 @@ export const validateConfig = (
 /**
  * Format test vector for display
  */
-export const formatTestVector = (vector: any): string => {
+export const formatTestVector = (vector: unknown): string => {
     return JSON.stringify(vector, null, 2)
 }
