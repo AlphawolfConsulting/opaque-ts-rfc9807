@@ -1,5 +1,36 @@
+# Build & compilation
 coverage/
 dist/
 lib/
+*.tsbuildinfo
+
+# Dependencies
 node_modules/
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+
+# IDE & editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Caches
+.eslintcache
+.turbo/
+.pnpm-store/
+
+# Legacy
 prompts/
+
+# Project config (local)
+CLAUDE.md
+llm-context/
+upgrades/
