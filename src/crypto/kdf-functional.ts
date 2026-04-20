@@ -64,7 +64,7 @@ export const hkdfExtract = curry3(
         salt: Uint8Array,
         ikm: Uint8Array
     ): Promise<Either<Error, Uint8Array>> => {
-        return tryCatchAsync(async () => {
+        return tryCatchAsync(() => {
             opaqueLogger.debug({
                 message: 'HKDF Extract',
                 hash: config.hash,
@@ -77,7 +77,7 @@ export const hkdfExtract = curry3(
 
             opaqueLogger.debug({ message: 'HKDF Extract complete', prkLength: prk.length })
 
-            return prk
+            return Promise.resolve(prk)
         })
     }
 )
@@ -99,7 +99,7 @@ export const hkdfExpand = curry4(
         info: Uint8Array,
         length: number
     ): Promise<Either<Error, Uint8Array>> => {
-        return tryCatchAsync(async () => {
+        return tryCatchAsync(() => {
             opaqueLogger.debug({
                 message: 'HKDF Expand',
                 hash: config.hash,
@@ -113,7 +113,7 @@ export const hkdfExpand = curry4(
 
             opaqueLogger.debug({ message: 'HKDF Expand complete', okmLength: okm.length })
 
-            return okm
+            return Promise.resolve(okm)
         })
     }
 )

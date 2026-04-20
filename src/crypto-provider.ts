@@ -21,10 +21,10 @@ export async function configureNobleCrypto(): Promise<void> {
         // Package exports it as '@cloudflare/voprf-ts/crypto-noble'
         // TypeScript's "node" moduleResolution doesn't understand package.json exports,
         // but the import works at runtime (and with "node16"/"nodenext" moduleResolution)
-        const cryptoNobleModule = await import(
+        const cryptoNobleModule = (await import(
             // @ts-expect-error - TypeScript "node" moduleResolution doesn't support package.json exports
             '@cloudflare/voprf-ts/crypto-noble'
-        )
+        )) as { CryptoNoble: typeof Oprf.Crypto }
         const CryptoNoble = cryptoNobleModule.CryptoNoble
 
         // Set as the global crypto provider for voprf-ts

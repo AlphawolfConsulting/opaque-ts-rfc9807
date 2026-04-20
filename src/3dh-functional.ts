@@ -103,7 +103,7 @@ export const computeTripleDHIKM = curry3(
         dh2: Uint8Array,
         dh3: Uint8Array
     ): Promise<Either<Error, Uint8Array>> => {
-        return tryCatchAsync(async () => {
+        return tryCatchAsync(() => {
             opaqueLogger.debug({ message: 'Computing Triple-DH IKM' })
 
             // Concatenate all three DH shares
@@ -111,7 +111,7 @@ export const computeTripleDHIKM = curry3(
 
             opaqueLogger.debug({ message: 'Triple-DH IKM computed', length: ikm.length })
 
-            return ikm
+            return Promise.resolve(ikm)
         })
     }
 )
