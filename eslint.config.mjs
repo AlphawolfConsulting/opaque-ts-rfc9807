@@ -17,8 +17,7 @@ export default eslintTS.config(
             'rollup.config.js',
             'coverage/*',
             'dist/*',
-            'lib/*',
-            'examples/*'
+            'lib/*'
         ]
     },
     {

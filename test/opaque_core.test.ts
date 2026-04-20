@@ -11,19 +11,19 @@ import { OpaqueCoreClient } from '../src/core_client.js'
 import { OpaqueCoreServer } from '../src/core_server.js'
 
 interface inputTest {
-    cfg: Config
-    database: KVStorage
-    password: Uint8Array
-    credential_identifier: Uint8Array
-    client_identity: Uint8Array
-    server_identity: Uint8Array
-    oprf_seed: Uint8Array
-    server_ake_keypair: AKEKeyPair
+    readonly cfg: Config
+    readonly database: KVStorage
+    readonly password: Uint8Array
+    readonly credential_identifier: Uint8Array
+    readonly client_identity: Uint8Array
+    readonly server_identity: Uint8Array
+    readonly oprf_seed: Uint8Array
+    readonly server_ake_keypair: AKEKeyPair
 }
 
 interface outputTest {
     record?: RegistrationRecord
-    export_key?: number[]
+    export_key?: readonly number[]
 }
 
 async function test_core_registration(input: inputTest, output: outputTest): Promise<boolean> {
