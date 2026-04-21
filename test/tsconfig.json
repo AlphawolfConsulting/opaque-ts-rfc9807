@@ -1,15 +1,16 @@
 {
     "extends": "../tsconfig.json",
     "include": [
-        ".",
+        "**/*.ts",
         "testdata/*.json"
     ],
     "compilerOptions": {
+        "outDir": "./lib",
         "resolveJsonModule": true
     },
     "references": [
         {
-            "path": ".."
+            "path": "../src"
         }
     ]
 }

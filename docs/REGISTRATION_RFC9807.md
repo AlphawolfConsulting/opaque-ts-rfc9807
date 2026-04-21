@@ -169,7 +169,7 @@ if (responseResult.isRight()) {
 **Key Derivation**:
 The server derives the OPRF key from its seed using:
 
-```
+```ts
 oprf_key_seed = HKDF-Expand(oprf_seed, "OprfKey", Nseed)
 oprf_key = DeriveKeyPair(oprf_key_seed)
 ```
@@ -279,7 +279,7 @@ if (finalizeResult.isRight()) {
 
 **Randomized Password Derivation** (RFC 9807 Section 3.3):
 
-```
+```ts
 oprf_output = OPRF.Finalize(password, blind, evaluation)
 stretched = HKDF-Extract("", oprf_output)
 randomized_pwd = KSF(stretched)  // Or stretched if KSF is Identity
@@ -287,7 +287,7 @@ randomized_pwd = KSF(stretched)  // Or stretched if KSF is Identity
 
 **Envelope Creation** (RFC 9807 Section 5.1):
 
-```
+```ts
 nonce = random(Nn)
 auth_key = HKDF-Expand(randomized_pwd, nonce || "AuthKey", Nh)
 export_key = HKDF-Expand(randomized_pwd, nonce || "ExportKey", Nh)
@@ -505,7 +505,7 @@ Server and client identities are bound to the envelope, preventing credential th
 
 The randomized password is derived using:
 
-```
+```ts
 randomized_pwd = KSF(HKDF-Extract("", OPRF_output))
 ```
 

@@ -38,7 +38,8 @@ interface KE1 {
 ```
 
 **RFC 9807 Structure**:
-```c
+
+```typescript
 struct {
   CredentialRequest request;
   AuthInit ake_init;
@@ -65,7 +66,8 @@ interface KE2 {
 ```
 
 **RFC 9807 Structure**:
-```c
+
+```ts
 struct {
   CredentialResponse credential_response;
   AuthResponse ake_response;
@@ -83,7 +85,8 @@ interface KE3 {
 ```
 
 **RFC 9807 Structure**:
-```c
+
+```ts
 struct {
   uint8 client_mac[Nm];
 } KE3;
@@ -101,6 +104,7 @@ masked_response = XOR(concat(server_public_key, envelope), pad)
 ```
 
 **Key Derivation**:
+
 ```text
 randomized_pwd = Extract(salt="", ikm=oprf_output)
 masking_key = Expand(randomized_pwd, info="MaskingKey", L=Nh)
@@ -109,6 +113,7 @@ masking_key = Expand(randomized_pwd, info="MaskingKey", L=Nh)
 ### Implementation
 
 **Masking (Server)**:
+
 ```typescript
 const maskCredentialResponse = curry4(
   async (
@@ -121,6 +126,7 @@ const maskCredentialResponse = curry4(
 ```
 
 **Unmasking (Client)**:
+
 ```typescript
 const unmaskCredentialResponse = curry3(
   async (
@@ -150,11 +156,13 @@ const createCredentialRequest = curry3(
 ```
 
 **Side Effects**:
+
 1. Crypto RNG (OPRF blind, nonce, keyshare)
 2. Logging
 3. cuid2 generation (session tracking only)
 
 **Example**:
+
 ```typescript
 import { createAuthOps } from './authentication-functional.js'
 
@@ -192,9 +200,11 @@ const recoverCredentials = curry7(
 ```
 
 **Side Effects**:
+
 1. Logging
 
 **Steps**:
+
 1. Finalize OPRF to get `oprf_output`
 2. Derive `randomized_pwd = Extract("", oprf_output)`
 3. Derive `masking_key = Expand(randomized_pwd, "MaskingKey", Nh)`
@@ -223,10 +233,12 @@ const createCredentialResponse = curry5(
 ```
 
 **Side Effects**:
+
 1. Crypto RNG (masking nonce)
 2. Logging
 
 **Steps**:
+
 1. OPRF evaluate blinded element
 2. Generate masking nonce
 3. Derive `randomized_pwd = Extract("", evaluation)`
@@ -261,6 +273,7 @@ const createAuthOps = (config: Config): BoundAuthOps
 ```
 
 **Example**:
+
 ```typescript
 const authOps = createAuthOps(config)
 
@@ -274,9 +287,11 @@ const credRespResult = await authOps.createCredentialResponse(ke1)
 
 ## Security Considerations
 
-### Credential Masking
+### Credential Masking: Security
 
+The credential masking mechanism prevents offline attacks on the server's public key and envelope by ensuring that the masked response reveals no information without the correct masking key. The use of XOR with a derived pad ensures that even if an attacker observes multiple authentication attempts, they cannot correlate them to recover the server's public key or envelope contents.
 The credential masking mechanism protects:
+
 - **Server Public Key**: Prevents offline attacks on server key
 - **Envelope**: Protects envelope integrity tag from observation
 - **Timing**: XOR operation is constant-time
@@ -284,6 +299,7 @@ The credential masking mechanism protects:
 ### Side Effects
 
 The implementation carefully limits side effects:
+
 1. **Crypto RNG**: Necessary for security (nonces, keys)
 2. **Logging**: Debug information only, no sensitive data
 3. **cuid2**: Session tracking only, NOT used for cryptographic operations
@@ -291,6 +307,7 @@ The implementation carefully limits side effects:
 ### Session IDs
 
 **Important**: `sessionId` (cuid2) is used ONLY for:
+
 - Request/response correlation in logs
 - Debugging and monitoring
 - Non-cryptographic session tracking
@@ -302,21 +319,25 @@ All cryptographic randomness uses `crypto.getRandomValues()`.
 Comprehensive test coverage in `test/authentication-rfc9807.test.ts`:
 
 ✅ **Message Structure Tests**
+
 - KE1 field sizes and structure
 - KE2 credential response structure
 - Session ID generation
 
 ✅ **Credential Masking Tests**
+
 - Mask/unmask round-trip correctness
 - Different nonces produce different masks
 - Wrong key detection
 
 ✅ **Authentication Flow Tests**
+
 - Full client-server flow
 - Error handling
 - Empty password handling
 
 ✅ **Session Tracking Tests**
+
 - Unique session IDs
 - Valid cuid2 format
 
@@ -455,6 +476,7 @@ const value = result.unsafeCoerce() // Safe after isLeft() check
 ### TypeScript Type Safety
 
 The implementation leverages TypeScript's type system:
+
 - Readonly properties prevent mutation
 - Curried function types ensure correct application
 - Either types force error handling

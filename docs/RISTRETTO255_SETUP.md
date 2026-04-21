@@ -106,18 +106,19 @@ pnpm exec tsx examples/ristretto255-demo.ts
 ```
 
 Expected output:
-```
-✅ Noble crypto provider configured - ristretto255 and decaf448 enabled
-✅ ristretto255-SHA512 is available!
-✅ Config created: Mode: 0 (modeOPRF), Hash: SHA-512, Element size (Noe): 32 bytes
-✅ OPRF output computed
-🎉 ristretto255 demo completed successfully!
+
+```text
+- [x] Noble crypto provider configured - ristretto255 and decaf448 enabled
+- [x] ristretto255-SHA512 is available!
+- [x] Config created: Mode: 0 (modeOPRF), Hash: SHA-512, Element size (Noe): 32 bytes
+OPRF output computed
+- [x] ristretto255 demo completed successfully!
 ```
 
 ## Supported Cipher Suites
 
 | Suite | Backend | Group | Hash | Element Size |
-|-------|---------|-------|------|--------------|
+| ------- | --------- | ------- | ------ | -------------- |
 | P256-SHA256 | sjcl (default) | P-256 | SHA-256 | 33 bytes |
 | P384-SHA384 | sjcl (default) | P-384 | SHA-384 | 49 bytes |
 | P521-SHA512 | sjcl (default) | P-521 | SHA-512 | 67 bytes |
@@ -127,6 +128,7 @@ Expected output:
 ## RFC 9497 Compliance
 
 All cipher suites use:
+
 - **Mode**: `0x00` (modeOPRF - base mode without verification)
 - **Protocol**: RFC 9497 Oblivious Pseudorandom Function (OPRF)
 - **voprf-ts version**: 1.0.0 (RFC 9497 compliant)
@@ -166,6 +168,7 @@ export enum OpaqueID {
 **Future Work**: Add `OPAQUE_RISTRETTO255 = 'ristretto255-SHA512'` to the enum and update the `OpaqueConfig` constructor switch statement. This will enable full end-to-end OPAQUE protocol testing with ristretto255.
 
 **Current Test Coverage**:
+
 - ✅ OPRF operations (blind/evaluate/finalize) - All passing
 - ✅ Functional wrapper with ristretto255 - All passing
 - ✅ Runtime demo working - examples/ristretto255-demo.ts

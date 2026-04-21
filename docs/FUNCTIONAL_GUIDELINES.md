@@ -17,6 +17,7 @@
 3. **Network I/O**: Using `@zambit/prioritized-loader-lite` loader
 
 **Note on IDs**:
+
 - **Cryptographic IDs** (nonces, seeds): MUST use `crypto.getRandomValues()`
 - **Tracking IDs** (for logging, sessions): Can optionally use cuid2
 - **NEVER** use cuid2, UUID, or any non-CSPRNG for cryptographic material
@@ -24,6 +25,7 @@
 ### Side Effect Tracking Pattern
 
 Mark functions with side effects in JSDoc:
+
 ```typescript
 /**
  * Generates a random nonce for envelope creation
@@ -121,10 +123,10 @@ describe('deriveKey', () => {
 
 ## Migration Checklist
 
--   [ ] Identify all side effects in existing code
--   [ ] Mark side effects with JSDoc comments
--   [ ] Ensure no function has more than 2 side effects
--   [ ] Convert Result<T, E> to Either<E, T> where beneficial
--   [ ] Apply currying to configuration functions
--   [ ] Use Maybe for optional values
--   [ ] Add functional tests for pure functions
+- [ ] Identify all side effects in existing code
+- [ ] Mark side effects with JSDoc comments
+- [ ] Ensure no function has more than 2 side effects
+- [ ] Convert Result<T, E> to Either<E, T> where beneficial
+- [ ] Apply currying to configuration functions
+- [ ] Use Maybe for optional values
+- [ ] Add functional tests for pure functions

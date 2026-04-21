@@ -12,6 +12,16 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 /**
+ * RFC 9807 Test Vector structure
+ */
+export interface TestVector {
+    readonly config: Record<string, number>
+    readonly inputs: Record<string, string>
+    readonly outputs: Record<string, string>
+    readonly intermediates: Record<string, string>
+}
+
+/**
  * Convert hex string to Uint8Array
  * @pure
  */
@@ -22,7 +32,7 @@ export const hexToBytes = (hex: string): Uint8Array => {
     }
     const bytes = new Uint8Array(cleaned.length / 2)
     for (let i = 0; i < bytes.length; i++) {
-        bytes[i] = parseInt(cleaned.substr(i * 2, 2), 16)
+        bytes[i] = parseInt(cleaned.slice(i * 2, i * 2 + 2), 16)
     }
     return bytes
 }
@@ -72,11 +82,11 @@ export const assertBytesEqual = (
 /**
  * Load test vector from JSON file
  */
-export const loadTestVector = async (filename: string): Promise<unknown> => {
+export const loadTestVector = async <T,>(filename: string): Promise<T> => {
     // When compiled, this file is in lib/src/test-utils/, need to go up to project root
     const vectorPath = join(__dirname, '../../../test/vectors-rfc9807', filename)
     const content = await readFile(vectorPath, 'utf-8')
-    return JSON.parse(content) as unknown
+    return JSON.parse(content) as T
 }
 
 /**

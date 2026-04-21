@@ -10,7 +10,7 @@ The envelope is a cryptographic container that protects client credentials durin
 
 According to RFC 9807, the envelope structure is:
 
-```
+```typescript
 struct {
   uint8 nonce[Nn];         // Envelope nonce (32 bytes)
   uint8 auth_tag[Nm];      // MAC authentication tag
@@ -27,7 +27,7 @@ struct {
 The protocol uses specific label strings for key derivation as defined in RFC 9807:
 
 | Label | Purpose | Usage |
-|-------|---------|-------|
+| ------- | --------- | ------- |
 | `"MaskingKey"` | Credential masking | Used to XOR-mask the server public key in the credential response |
 | `"AuthKey"` | Envelope authentication | Used to compute the HMAC authentication tag |
 | `"ExportKey"` | Key export | Additional key material that can be exported for external use |
@@ -53,7 +53,8 @@ The authentication tag provides integrity protection for the envelope and its as
 auth_tag = MAC(auth_key, concat(nonce, cleartext_creds))
 ```
 
-### Coverage Includes:
+### Coverage Includes
+
 1. **Envelope nonce**: Ensures the nonce hasn't been tampered with
 2. **Server public key**: Part of cleartext_creds, prevents key substitution attacks
 3. **Server identity**: Part of cleartext_creds, binds the envelope to a specific server
@@ -67,7 +68,7 @@ The `Store` operation creates an envelope during client registration.
 
 ### Algorithm
 
-```
+```text
 Store(randomized_pwd, server_public_key, server_identity, client_identity):
 
   1. envelope_nonce = random(Nn)
@@ -90,6 +91,7 @@ Store(randomized_pwd, server_public_key, server_identity, client_identity):
 ```
 
 ### Side Effects
+
 - **Crypto RNG**: Generates random nonce (1 side effect)
 - **Logging**: Debug logging (1 side effect)
 - **Total**: 2 side effects ✓
@@ -98,9 +100,9 @@ Store(randomized_pwd, server_public_key, server_identity, client_identity):
 
 The `Recover` operation extracts credentials from an envelope during client authentication.
 
-### Algorithm
+### Algorithm: Recovery
 
-```
+```text
 Recover(randomized_pwd, envelope, server_public_key, server_identity, client_identity):
 
   1. Re-derive keys using the same process as Store:
@@ -120,7 +122,8 @@ Recover(randomized_pwd, envelope, server_public_key, server_identity, client_ide
   6. Return (client_private_key, export_key)
 ```
 
-### Side Effects
+### Side Effects: Logger
+
 - **Logging**: Debug logging (1 side effect)
 - **Total**: 1 side effect ✓
 
@@ -190,16 +193,19 @@ if (result.isRight()) {
 ## Security Properties
 
 ### Confidentiality
+
 - Client private key is never stored directly
 - Derived deterministically from `randomized_pwd` and `nonce`
 - Requires knowledge of the password to recover
 
 ### Integrity
+
 - HMAC authentication tag protects envelope and credentials
 - Any modification to nonce, credentials, or password will cause verification failure
 - Prevents server from substituting different credentials
 
 ### Binding
+
 - Envelope is cryptographically bound to:
   - Client's password (via `randomized_pwd`)
   - Server's public key
@@ -209,6 +215,7 @@ if (result.isRight()) {
 ## Implementation Notes
 
 ### Currying
+
 All envelope operations are fully curried, allowing partial application:
 
 ```typescript
@@ -223,14 +230,18 @@ const result = await storeWithPassword(creds)(deriveKeyPair)
 ```
 
 ### Either Monads
+
 Operations return `Either<Error, Result>` instead of throwing exceptions:
+
 - `Right(result)`: Operation succeeded
 - `Left(error)`: Operation failed
 
 This makes error handling explicit and composable.
 
 ### Type Safety
+
 TypeScript types ensure:
+
 - Correct parameter order
 - Proper Either handling
 - No null/undefined issues
@@ -239,6 +250,7 @@ TypeScript types ensure:
 ## Testing
 
 See [envelope-rfc9807.test.ts](../test/envelope-rfc9807.test.ts) for comprehensive test coverage including:
+
 - Store/recover round-trip
 - Authentication failure detection
 - Modified envelope detection

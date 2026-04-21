@@ -9,12 +9,14 @@
 ## Current Status
 
 ### Installed Version
+
 - **Current**: `0.21.2`
 - **Latest Available**: `1.0.0`
 - **Status**: ⚠️ UPGRADE REQUIRED
 
 ### Available Versions
-```
+
+```text
 0.8.0
 0.9.0
 0.11.0
@@ -28,10 +30,11 @@
 
 ### Version 1.0.0 (Released August 13, 2024)
 
-**Official Release Notes**: 
+**Official Release Notes**:
 > "Fully compatible with [RFC 9497](https://www.rfc-editor.org/info/rfc9497)"
 
 **Key Features**:
+
 - ✅ RFC 9497 fully compliant
 - ✅ Support for Decaf & Ristretto groups
 - ✅ Support for noble cryptography backend
@@ -40,6 +43,7 @@
 - ✅ Security vulnerability fixes
 
 **API Changes from 0.21.2 → 1.0.0**:
+
 - Introduced `@cloudflare/voprf-ts/facade` for flexible crypto provider
 - Pass crypto as argument everywhere for better testability
 - Improved import type declarations
@@ -52,12 +56,14 @@
 ### ✅ UPGRADE TO 1.0.0
 
 **Rationale**:
+
 1. **RFC 9497 Compliance**: Version 1.0.0 is officially RFC 9497 compliant
 2. **OPAQUE RFC 9807 Requirement**: OPAQUE RFC 9807 depends on RFC 9497 OPRF
 3. **Active Maintenance**: Recent release (Aug 2024) with security fixes
 4. **No Breaking Changes**: API is backward compatible with proper imports
 
 ### Upgrade Command
+
 ```bash
 pnpm update @cloudflare/voprf-ts@1.0.0
 ```
@@ -67,17 +73,20 @@ pnpm update @cloudflare/voprf-ts@1.0.0
 ## Dependency Information
 
 ### Repository
-- **GitHub**: https://github.com/cloudflare/voprf-ts
-- **NPM**: https://www.npmjs.com/package/@cloudflare/voprf-ts
+
+- **GitHub**: <https://github.com/cloudflare/voprf-ts>
+- **NPM**: <https://www.npmjs.com/package/@cloudflare/voprf-ts>
 - **License**: BSD-3-Clause
 - **Maintainer**: Cloudflare (armfazh, thibmeu, and team)
 
 ### Supported Modes
+
 - `Oprf.Mode.OPRF` - Base OPRF (used by OPAQUE)
 - `Oprf.Mode.VOPRF` - Verifiable OPRF
 - `Oprf.Mode.POPRF` - Partially-Oblivious OPRF
 
 ### Supported Suites (with Noble backend)
+
 - ✅ `Oprf.Suite.P256_SHA256`
 - ✅ `Oprf.Suite.P384_SHA384`
 - ✅ `Oprf.Suite.P521_SHA512`
@@ -89,6 +98,7 @@ pnpm update @cloudflare/voprf-ts@1.0.0
 ## API Changes Impact Assessment
 
 ### Current OPAQUE Usage Pattern
+
 ```typescript
 import { OPRFClient, OPRFServer, Oprf } from '@cloudflare/voprf-ts'
 
@@ -97,11 +107,13 @@ const server = new OPRFServer(suiteId, privateKey)
 ```
 
 ### v1.0.0 Compatibility
+
 - ✅ **No changes required** - Existing API remains compatible
 - ✅ Default crypto provider continues to work
 - ℹ️ Optional: Can migrate to facade pattern for custom crypto providers
 
 ### Migration Risk
+
 - **Risk Level**: LOW
 - **Breaking Changes**: None for standard usage
 - **Testing Required**: Verify OPRF operations still work correctly
@@ -112,10 +124,12 @@ const server = new OPRFServer(suiteId, privateKey)
 ## Testing Strategy
 
 ### Pre-Upgrade Tests
+
 1. ✅ Run current test suite with 0.21.2
 2. ✅ Document current behavior
 
 ### Post-Upgrade Tests
+
 1. Run existing OPRF tests with 1.0.0
 2. Verify blind/evaluate/finalize operations
 3. Verify key derivation works correctly
@@ -123,6 +137,7 @@ const server = new OPRFServer(suiteId, privateKey)
 5. Verify serialization format unchanged
 
 ### Validation Checklist
+
 - [ ] OPRF blind operation works
 - [ ] OPRF evaluate operation works
 - [ ] OPRF finalize operation works
@@ -138,18 +153,22 @@ const server = new OPRFServer(suiteId, privateKey)
 ### Key Differences from draft-voprf-08
 
 #### Mode Specification
+
 - **draft-08**: Implicit mode selection
 - **RFC 9497**: Explicit mode byte (0x00 for base OPRF)
 
 #### Suite IDs
+
 - Formalized suite identifiers
 - Hash-to-curve aligned with RFC 9380
 
 #### API Refinements
+
 - `DeriveKeyPair` formalized in Section 3.2
 - Group element serialization standardized
 
 ### OPAQUE Integration Points
+
 1. **Registration**: Client blinds password, server evaluates
 2. **Authentication**: Same OPRF flow for credential retrieval
 3. **Key Derivation**: Server OPRF keys derived via `DeriveKeyPair`
@@ -181,6 +200,7 @@ const server = new OPRFServer(suiteId, privateKey)
 ## Action Items
 
 ### Immediate (Phase 1)
+
 - [x] Audit @cloudflare/voprf-ts versions
 - [x] Identify RFC 9497 compliant version
 - [x] Document API changes and impacts
@@ -189,6 +209,7 @@ const server = new OPRFServer(suiteId, privateKey)
 - [ ] Update OPRF wrapper to use RFC 9497 terminology
 
 ### Future (Post-Phase 1)
+
 - [ ] Consider facade pattern for custom crypto providers
 - [ ] Add RFC 9497 test vectors to test suite
 - [ ] Document mode byte (0x00) in OPRF operations

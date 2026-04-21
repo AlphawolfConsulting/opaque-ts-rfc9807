@@ -6,13 +6,14 @@ import {
     loadTestVector,
     parseVectorHex,
     assertBytesEqual,
-    bytesToHex
+    bytesToHex,
+    type TestVector
 } from '../src/test-utils/vector-validation.js'
 
 describe('RFC 9807 Registration Test Vectors', () => {
     describe('ristretto255-SHA512 Vector 1 (no identities)', () => {
         it('should match RFC 9807 Appendix C.1.1 registration vector', async () => {
-            const vector = await loadTestVector('ristretto255-sha512-real-vector-1.json')
+            const vector = await loadTestVector<TestVector>('ristretto255-sha512-real-vector-1.json')
             const intermediates = parseVectorHex(vector.intermediates)
             const outputs = parseVectorHex(vector.outputs)
             const config = vector.config
@@ -64,7 +65,7 @@ describe('RFC 9807 Registration Test Vectors', () => {
 
     describe('ristretto255-SHA512 Vector 2 (with identities)', () => {
         it('should match RFC 9807 Appendix C.1.2 registration vector', async () => {
-            const vector = await loadTestVector('ristretto255-sha512-real-vector-2.json')
+            const vector = await loadTestVector<TestVector>('ristretto255-sha512-real-vector-2.json')
             const inputs = parseVectorHex(vector.inputs)
             const intermediates = parseVectorHex(vector.intermediates)
             const outputs = parseVectorHex(vector.outputs)
@@ -84,7 +85,7 @@ describe('RFC 9807 Registration Test Vectors', () => {
             expect(outputs.registration_upload.length).toBe(expectedUploadLength)
 
             // Verify the envelope differs from vector 1 due to identity inclusion
-            const vector1 = await loadTestVector('ristretto255-sha512-real-vector-1.json')
+            const vector1 = await loadTestVector<TestVector>('ristretto255-sha512-real-vector-1.json')
             const vector1Intermediates = parseVectorHex(vector1.intermediates)
 
             // Envelopes should differ because auth_tag covers identities
@@ -96,7 +97,7 @@ describe('RFC 9807 Registration Test Vectors', () => {
 
     describe('P256-SHA256 Vector 5', () => {
         it('should match RFC 9807 Appendix C.1.5 registration vector', async () => {
-            const vector = await loadTestVector('p256-sha256-real-vector-5.json')
+            const vector = await loadTestVector<TestVector>('p256-sha256-real-vector-5.json')
             const config = vector.config
             const outputs = parseVectorHex(vector.outputs)
 
@@ -126,7 +127,7 @@ describe('RFC 9807 Registration Test Vectors', () => {
             ]
 
             for (const vectorFile of vectors) {
-                const vector = await loadTestVector(vectorFile)
+                const vector = await loadTestVector<TestVector>(vectorFile)
                 const config = vector.config
                 const outputs = parseVectorHex(vector.outputs)
 

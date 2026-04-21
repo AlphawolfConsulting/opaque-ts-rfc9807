@@ -6,13 +6,14 @@ import {
     loadTestVector,
     parseVectorHex,
     assertBytesEqual,
-    bytesToHex
+    bytesToHex,
+    type TestVector
 } from '../src/test-utils/vector-validation.js'
 
 describe('RFC 9807 Fake Credential Response Test Vectors', () => {
     describe('ristretto255-SHA512 Fake Response', () => {
         it('should match RFC 9807 Appendix C.2.1 fake credential response', async () => {
-            const fakeVector = await loadTestVector('ristretto255-sha512-fake-vector-1.json')
+            const fakeVector = await loadTestVector<TestVector>('ristretto255-sha512-fake-vector-1.json')
             const inputs = parseVectorHex(fakeVector.inputs)
             const outputs = parseVectorHex(fakeVector.outputs)
             const config = fakeVector.config
@@ -44,8 +45,8 @@ describe('RFC 9807 Fake Credential Response Test Vectors', () => {
 
     describe('Fake Response Indistinguishability', () => {
         it('should produce KE2 with same structure as real response', async () => {
-            const fakeVector = await loadTestVector('ristretto255-sha512-fake-vector-1.json')
-            const realVector = await loadTestVector('ristretto255-sha512-real-vector-2.json')
+            const fakeVector = await loadTestVector<TestVector>('ristretto255-sha512-fake-vector-1.json')
+            const realVector = await loadTestVector<TestVector>('ristretto255-sha512-real-vector-2.json')
 
             const fakeOutputs = parseVectorHex(fakeVector.outputs)
             const realOutputs = parseVectorHex(realVector.outputs)
@@ -72,7 +73,7 @@ describe('RFC 9807 Fake Credential Response Test Vectors', () => {
         })
 
         it('should use fake record parameters correctly', async () => {
-            const fakeVector = await loadTestVector('ristretto255-sha512-fake-vector-1.json')
+            const fakeVector = await loadTestVector<TestVector>('ristretto255-sha512-fake-vector-1.json')
             const inputs = parseVectorHex(fakeVector.inputs)
 
             // Fake record should have client keys
@@ -93,7 +94,7 @@ describe('RFC 9807 Fake Credential Response Test Vectors', () => {
 
     describe('Fake Response Security Properties', () => {
         it('should include proper nonces and prevent replay', async () => {
-            const fakeVector = await loadTestVector('ristretto255-sha512-fake-vector-1.json')
+            const fakeVector = await loadTestVector<TestVector>('ristretto255-sha512-fake-vector-1.json')
             const outputs = parseVectorHex(fakeVector.outputs)
             const inputs = parseVectorHex(fakeVector.inputs)
             const config = fakeVector.config
@@ -113,7 +114,7 @@ describe('RFC 9807 Fake Credential Response Test Vectors', () => {
         })
 
         it('should include valid server MAC', async () => {
-            const fakeVector = await loadTestVector('ristretto255-sha512-fake-vector-1.json')
+            const fakeVector = await loadTestVector<TestVector>('ristretto255-sha512-fake-vector-1.json')
             const outputs = parseVectorHex(fakeVector.outputs)
             const config = fakeVector.config
 
@@ -129,8 +130,8 @@ describe('RFC 9807 Fake Credential Response Test Vectors', () => {
 
     describe('Enumeration Prevention', () => {
         it('should demonstrate indistinguishability from real responses', async () => {
-            const fakeVector = await loadTestVector('ristretto255-sha512-fake-vector-1.json')
-            const realVector = await loadTestVector('ristretto255-sha512-real-vector-2.json')
+            const fakeVector = await loadTestVector<TestVector>('ristretto255-sha512-fake-vector-1.json')
+            const realVector = await loadTestVector<TestVector>('ristretto255-sha512-real-vector-2.json')
 
             const fakeKE2 = parseVectorHex(fakeVector.outputs).KE2
             const realKE2 = parseVectorHex(realVector.outputs).KE2

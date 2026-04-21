@@ -180,7 +180,7 @@ export const deriveOPRFKeyPair = curry2(
 
 ### Registration Flow (RFC 9497 Section 4.1)
 
-```
+```txt
 Client                                  Server
 ------                                  ------
 1. password

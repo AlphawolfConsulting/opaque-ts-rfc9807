@@ -6,13 +6,14 @@ import {
     loadTestVector,
     parseVectorHex,
     assertBytesEqual,
-    bytesToHex
+    bytesToHex,
+    type TestVector
 } from '../src/test-utils/vector-validation.js'
 
 describe('RFC 9807 Authentication Test Vectors', () => {
     describe('ristretto255-SHA512 KE Messages', () => {
         it('should match RFC 9807 Appendix C.1.1 KE1 structure', async () => {
-            const vector = await loadTestVector('ristretto255-sha512-real-vector-1.json')
+            const vector = await loadTestVector<TestVector>('ristretto255-sha512-real-vector-1.json')
             const outputs = parseVectorHex(vector.outputs)
             const config = vector.config
 
@@ -41,7 +42,7 @@ describe('RFC 9807 Authentication Test Vectors', () => {
         })
 
         it('should match RFC 9807 Appendix C.1.1 KE2 structure', async () => {
-            const vector = await loadTestVector('ristretto255-sha512-real-vector-1.json')
+            const vector = await loadTestVector<TestVector>('ristretto255-sha512-real-vector-1.json')
             const outputs = parseVectorHex(vector.outputs)
             const config = vector.config
 
@@ -90,7 +91,7 @@ describe('RFC 9807 Authentication Test Vectors', () => {
         })
 
         it('should match RFC 9807 Appendix C.1.1 KE3 structure', async () => {
-            const vector = await loadTestVector('ristretto255-sha512-real-vector-1.json')
+            const vector = await loadTestVector<TestVector>('ristretto255-sha512-real-vector-1.json')
             const outputs = parseVectorHex(vector.outputs)
             const config = vector.config
 
@@ -105,7 +106,7 @@ describe('RFC 9807 Authentication Test Vectors', () => {
 
     describe('ristretto255-SHA512 Session Keys', () => {
         it('should validate export key and session key derivation', async () => {
-            const vector = await loadTestVector('ristretto255-sha512-real-vector-1.json')
+            const vector = await loadTestVector<TestVector>('ristretto255-sha512-real-vector-1.json')
             const outputs = parseVectorHex(vector.outputs)
             const config = vector.config
 
@@ -124,7 +125,7 @@ describe('RFC 9807 Authentication Test Vectors', () => {
 
     describe('P256-SHA256 KE Messages', () => {
         it('should match RFC 9807 Appendix C.1.5 KE message structures', async () => {
-            const vector = await loadTestVector('p256-sha256-real-vector-5.json')
+            const vector = await loadTestVector<TestVector>('p256-sha256-real-vector-5.json')
             const outputs = parseVectorHex(vector.outputs)
 
             // KE1 with P256 (Npk=33, Nh=32)
@@ -155,7 +156,7 @@ describe('RFC 9807 Authentication Test Vectors', () => {
             ]
 
             for (const vectorFile of vectors) {
-                const vector = await loadTestVector(vectorFile)
+                const vector = await loadTestVector<TestVector>(vectorFile)
                 const intermediates = parseVectorHex(vector.intermediates)
                 const config = vector.config
 
@@ -182,8 +183,8 @@ describe('RFC 9807 Authentication Test Vectors', () => {
 
     describe('Cross-Vector Consistency', () => {
         it('should maintain consistency across vectors with same inputs', async () => {
-            const vector1 = await loadTestVector('ristretto255-sha512-real-vector-1.json')
-            const vector2 = await loadTestVector('ristretto255-sha512-real-vector-2.json')
+            const vector1 = await loadTestVector<TestVector>('ristretto255-sha512-real-vector-1.json')
+            const vector2 = await loadTestVector<TestVector>('ristretto255-sha512-real-vector-2.json')
 
             const inputs1 = parseVectorHex(vector1.inputs)
             const inputs2 = parseVectorHex(vector2.inputs)
